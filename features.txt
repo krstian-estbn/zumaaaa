@@ -1,0 +1,14 @@
+Start of each round
+- asks to place tower
+- if yes, left click the cell you want to put the tower (gray available cells, pink unavailable)
+- press enter if you want to start the game
+
+Gameplay
+- The path taken by enemy changes (randomly) per round, but the towers remain in place
+- Next color indicator at the bottom right corner
+- Right click the tower to modify them (upgrade or change orientation)
+- Bullets are blocked by tunnels
+
+Possible Errors and Changes
+- The randomized path may be forced to take cells that are not allowed (tower cells, center cells) since the path changes but the tower placements do not per round (i think it does not change based sa sinend na gameplay so we can just make this a bonus feature ?)
+- ...
