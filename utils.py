@@ -13,8 +13,8 @@ class Orientation(Enum):
     LEFT = auto()
     RIGHT = auto()
 
-def create_grid(cell_size, screen_height, screen_width):
-    li = []
+def create_grid(cell_size: int, screen_height: int, screen_width: int) -> list[tuple[int, int]]:
+    li: list[tuple[int, int]] = []
     for x in range(0, screen_width, cell_size):
         for y in range(0, screen_height, cell_size):
             li.append((x, y))
