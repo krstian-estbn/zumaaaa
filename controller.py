@@ -20,6 +20,9 @@ class Controller:
         self.ty = 0
 
     def start_game(self):
+        pyxel.load("bgm.pyxres")
+        pyxel.playm(0, 0, loop=True)
+
         pyxel.load("zuma.pyxres")
         pyxel.mouse(True)
         pyxel.run(self.update, self.draw)
