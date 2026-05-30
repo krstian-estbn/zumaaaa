@@ -20,10 +20,8 @@ class Controller:
         self.ty = 0
 
     def start_game(self):
-        pyxel.load("bgm.pyxres")
-        pyxel.playm(0, 0, loop=True)
-
         pyxel.load("zuma.pyxres")
+        pyxel.playm(1, 0, loop=True)
         pyxel.mouse(True)
         pyxel.run(self.update, self.draw)
 
@@ -125,11 +123,14 @@ class Controller:
                             self.select_tower = tower
                             self.tx, self.ty = tower.x, tower.y
                             break
-
+                
                 self._model.update()
 
 
     def draw(self):
+        if self._model.hit_enemy:
+            self._model.hit_enemy = False
+            pyxel.playm(0, 0, loop=False)
         self._view.reset_screen()
         if not self._model.is_game_over:
             if self._model.start_round:

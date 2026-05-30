@@ -158,6 +158,7 @@ class Model:
         self.spawn_interval: int = 50
         
         self.shooter = Shooter(pyxel.width // 2, pyxel.height // 2)
+        self.hit_enemy = False
 
         self.blocked_cells: Set[Vec2] = {(pyxel.width // 2 - 8, pyxel.height // 2 - 8)}
         self.tower_cells: Set[Vec2] = set()
@@ -323,6 +324,7 @@ class Model:
 
                     if bullet.color == enemy.color and not self._in_tunnel(enemy.x, enemy.y):
                         hit_enemies.add(j)
+                        self.hit_enemy = True
                         self.exp += 1
                         self.limit -= 1
 
@@ -343,6 +345,7 @@ class Model:
 
                         if bullet.color == enemy.color and not self._in_tunnel(enemy.x, enemy.y):
                             hit_enemies.add(j)
+                            self.hit_enemy = True
                             self.exp += 1
                             self.limit -= 1
 
