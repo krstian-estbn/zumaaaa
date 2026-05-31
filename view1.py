@@ -127,12 +127,6 @@ class View:
     def draw_round(self, rounds):
         pyxel.text(pyxel.width // 2 - (4 * len(f"ROUNDS LEFT: {rounds}")) // 2, pyxel.height // 2, f"ROUNDS LEFT: {rounds}", pyxel.COLOR_WHITE)
 
-        """
-        n = len("Press [P] to play.")
-        pyxel.rect(pyxel.width // 2 - (4 * n) // 2 - 2, pyxel.height // 2 - 20 - 2, n * 4 + 3, 9, pyxel.COLOR_GRAY)
-        pyxel.text(pyxel.width // 2 - (4 * n) // 2, pyxel.height // 2 - 20, "Press [P] to play.", pyxel.COLOR_BLACK)
-        """
-
     def draw_routes(self, routes):
         for k, route in enumerate(routes):
             v = 48 if k == 0 else 64
@@ -274,3 +268,12 @@ class View:
         create_configurable(f"SPEED: {tower_speed:.1f}".ljust(11), start_1x, end_1x, start_y + spacing * 9, pyxel.COLOR_CYAN, pyxel.COLOR_NAVY)
 
         create_text("  EXIT  ", pyxel.width // 2, start_y + spacing * 10, pyxel.COLOR_PINK, pyxel.COLOR_RED)
+
+    def draw_modes(self):
+        min_y = pyxel.height // 2 - 55
+        pyxel.blt(pyxel.width // 2 - 64 - 8, min_y, 1, 0, 32, 64, 64, 0)
+        pyxel.blt(pyxel.width // 2 + 8, min_y, 1, 64, 32, 64, 64, 0)
+        create_text(" NORMAL ", pyxel.width // 2 - 8 - 32, min_y + 70, pyxel.COLOR_CYAN, pyxel.COLOR_NAVY)
+        create_text("  HARD  ", pyxel.width // 2 - 8 - 32, min_y + 70 + BlOCK_SIZE + PADDING, pyxel.COLOR_PINK, pyxel.COLOR_RED)
+        create_text(" NORMAL ", pyxel.width // 2 + 8 + 32, min_y + 70, pyxel.COLOR_CYAN, pyxel.COLOR_NAVY)
+        create_text("  HARD  ", pyxel.width // 2 + 8 + 32, min_y + 70 + BlOCK_SIZE + PADDING, pyxel.COLOR_PINK, pyxel.COLOR_RED)

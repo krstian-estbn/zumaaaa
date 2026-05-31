@@ -18,6 +18,12 @@ class GameState(Enum):
     GAME = auto()
     SETTINGS = auto()
 
+class Mode(Enum):
+    CAMPAIGN_NORMAL = auto()
+    CAMPAIGN_HARD = auto()
+    ENDLESS_NORMAL = auto()
+    ENDLESS_HARD = auto()
+
 def create_grid(cell_size: int, screen_height: int, screen_width: int) -> list[tuple[int, int]]:
     li: list[tuple[int, int]] = []
     for x in range(0, screen_width, cell_size):

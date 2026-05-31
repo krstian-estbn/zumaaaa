@@ -5,7 +5,7 @@ from typing import List, Tuple, Dict, Set
 
 import pyxel
 
-from utils import Color, Orientation, create_grid, overlap, GameState
+from utils import Color, Orientation, create_grid, overlap, GameState, Mode
 
 RNG = Random()
 
@@ -297,9 +297,10 @@ class Model:
 
         self.state: GameState = GameState.START
         self.smooth: bool = False
+        self.mode = None
 
         self.game_over: bool = False
-        self.exp: int = 0
+        self.exp: int = 5
         self.lives: int = data["n_lives"]
 
         self.limit: int = data["n_enemies"]
@@ -335,20 +336,31 @@ class Model:
         return self.game_over
 
     def reset_round(self) -> None:
-        self.limit: int = 5
+        with open('settings.json', 'r') as f:
+            data = json.load(f)
+
+        if self.mode in (Mode.CAMPAIGN_HARD, Mode.ENDLESS_HARD):
+            self.blocked_cells = {(pyxel.width // 2 - 8, pyxel.height // 2 - 8)} | self.tower_cells
+            self.tunnel_cells = set()
+            self.routes = self.generate_routes()
+            self.tunnels = self.generate_tunnels()
+            for tower in self.towers:
+                self.exp += tower.level * 5
+            self.towers = []
+
+        self.limit: int = data["n_enemies"]
         self.enemies: List[Enemy] = []
         self.timer: int = 0
 
-        self.blocked_cells = {(pyxel.width // 2 - 8, pyxel.height // 2 - 8)} | self.tower_cells
-        self.tunnel_cells = set()
-        self.routes = self.generate_routes()
-        self.tunnels = self.generate_tunnels()
-
         self.start_round = True
-        self.rounds -= 1
 
-        if self.lives <= 0 or self.rounds <= 0:
+        if self.lives <= 0:
             self.game_over = True
+        
+        if self.mode in (Mode.CAMPAIGN_HARD, Mode.CAMPAIGN_NORMAL):
+            self.rounds -= 1
+            if self.rounds <= 0:
+                self.game_over = True
 
     def generate_routes(self) -> List[List[RouteNode]]:
         cell_size = 16

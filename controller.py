@@ -1,6 +1,6 @@
 from model1 import Model, Enemy, Tower, Regenerator, Chameleon
 from view1 import View
-from utils import Orientation, GameState
+from utils import Orientation, GameState, Mode
 
 import pyxel
 import math
@@ -90,8 +90,8 @@ class Controller:
         text_width = len_text * 4 + padding * 2 + 2
         text_height = 6 + padding * 2 + 2
         return (
-            x - text_width // 2 <= pyxel.mouse_x < x + text_width // 2 and 
-            y <= pyxel.mouse_y < y + 12
+            x - text_width // 2 <= pyxel.mouse_x <= x + text_width // 2 and 
+            y <= pyxel.mouse_y <= y + text_height
         )
 
     def click_tower_info(self):
@@ -122,7 +122,22 @@ class Controller:
                     quit()
             elif self._model.state == GameState.GAME:
                 if self._model.start_round:
-                    self.take_input()
+                    if pyxel.btnp(pyxel.MOUSE_BUTTON_LEFT) and self._model.mode is None:
+                        start_y = pyxel.height // 2 - 55 + 70
+                        spacing = 17
+                        start_1x = pyxel.width // 2 - 8 - 32
+                        start_2x = pyxel.width // 2 + 8 + 32
+                        if self._is_clicked_text(start_1x, start_y, 8):
+                            self._model.mode = Mode.CAMPAIGN_NORMAL
+                        elif self._is_clicked_text(start_1x, start_y + spacing, 8):
+                            self._model.mode = Mode.CAMPAIGN_HARD
+                        if self._is_clicked_text(start_2x, start_y, 8):
+                            self._model.mode = Mode.ENDLESS_NORMAL
+                        elif self._is_clicked_text(start_2x, start_y + spacing, 8):
+                            self._model.mode = Mode.ENDLESS_HARD
+
+                    if self._model.mode:
+                        self.take_input()
                 elif self.place_tower:
                     if pyxel.btnp(pyxel.MOUSE_BUTTON_LEFT):
                         self.check_tower()
@@ -285,8 +300,12 @@ class Controller:
                 self._view.draw_start()
             elif self._model.state == GameState.GAME:
                 if self._model.start_round:
-                    self._view.draw_inputs(self.input, self._model.exp >= 5)
-                    self._view.draw_round(self._model.rounds)
+                    if self._model.mode is None:
+                        self._view.draw_modes()
+                    else:
+                        self._view.draw_inputs(self.input, self._model.exp >= 5)
+                        if self._model.mode in (Mode.CAMPAIGN_HARD, Mode.CAMPAIGN_NORMAL):
+                            self._view.draw_round(self._model.rounds)
                 else:
                     self._view.draw_next_color(self._model.shooter.next_color)
                     self._view.draw_exp(self._model.exp)
