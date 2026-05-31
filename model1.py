@@ -5,7 +5,7 @@ from typing import List, Tuple, Dict, Set
 
 import pyxel
 
-from utils import Color, Orientation, create_grid, overlap, GameState, Mode
+from utils import Color, Orientation, GameState, Mode, create_grid, overlap
 
 RNG = Random()
 
@@ -98,6 +98,9 @@ class Regenerator(Enemy):
 
         if smooth: # add: regenerator logic + configurable speed for smooth movement
             self.spawned = False
+            if (self.route_idx + 1) % self.h == 0:
+                self.hit_point += 1
+          
             if direction == 1:
                 self.x += .5
                 if self.x >= node["x"]:
@@ -222,7 +225,7 @@ class Tower:
             self.bullets.append(
                 TowerBullet(self.x + 4, self.y + 4, 4, self.orientation, self.speed))
 
-    def edit_orientation(self, orientation) -> None:
+    def edit_orientation(self, orientation: Orientation) -> None:
         self.orientation = orientation
 
     def upgrade(self) -> None:
@@ -267,7 +270,7 @@ class Shooter:
 
     def update(self) -> None:
         self.timer += self.rate
-        for bullet in self.bullets:
+        for bullet in self.bullets[:]: # so walang maskip na bullets when removing
             if bullet.x <= 0 or bullet.y <= 0:
                 self.bullets.remove(bullet)
 
