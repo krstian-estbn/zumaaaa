@@ -1,7 +1,7 @@
 import json
 import math
 from random import Random
-from typing import List, Tuple, Dict, Set
+from typing import List, Tuple, Dict, Set, Optional
 
 import pyxel
 
@@ -300,7 +300,7 @@ class Model:
 
         self.state: GameState = GameState.START
         self.smooth: bool = False
-        self.mode = None
+        self.mode: Optional[Mode] = None
 
         self.game_over: bool = False
         self.exp: int = 5
@@ -353,7 +353,7 @@ class Model:
 
         self.limit: int = data["n_enemies"]
         self.enemies: List[Enemy] = []
-        self.timer: int = 0
+        self.timer: float = 0
 
         self.start_round = True
 
