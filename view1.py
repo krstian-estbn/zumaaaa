@@ -1,6 +1,33 @@
 import pyxel
 from utils import Color, Orientation
+from model1 import Enemy, Regenerator, Chameleon
 
+BlOCK_SIZE = 13
+PADDING = 3
+
+def create_text(text, x, y, bg_color, text_color, center=True):
+    text_width = 4 * len(text)
+    text_height = 6
+
+    text_x = x - text_width // 2 if center else x
+    text_y = y + PADDING + 2
+
+    rect_x = text_x - PADDING
+    rect_y = text_y - PADDING
+    rect_width = text_width + (PADDING * 2)
+    rect_height = text_height + (PADDING * 2)
+
+    pyxel.rect(rect_x - 1, rect_y - 1, rect_width + 2, rect_height + 2, text_color)
+    pyxel.rect(rect_x, rect_y, rect_width, rect_height, bg_color)
+    pyxel.text(text_x, text_y, text, text_color)
+
+def create_button(x, y, u):
+    pyxel.blt(x, y, 0, u, 128, 16, 16, 0)
+
+def create_configurable(text, x1, x2, y, bg_color, text_color):
+    create_button(x1, y, 48)
+    create_text(text, x1 + 16 + 8, y, bg_color, text_color, False)
+    create_button(x2, y, 32)
 
 class View:
     def draw_shooter(self, shooter):
@@ -18,16 +45,40 @@ class View:
 
     def draw_enemies(self, enemies):
         for enemy in enemies:
-            if enemy.color == Color.YELLOW:
-                pyxel.blt(enemy.x, enemy.y, 0, 0, 0, 16, 16, 0)
-            elif enemy.color == Color.GREEN:
-                pyxel.blt(enemy.x, enemy.y, 0, 16, 0, 16, 16, 0)
-            elif enemy.color == Color.BLUE:
-                pyxel.blt(enemy.x, enemy.y, 0, 32, 0, 16, 16, 0)
-            elif enemy.color == Color.PINK:
-                pyxel.blt(enemy.x, enemy.y, 0, 48, 0, 16, 16, 0)
-            else:
-                pyxel.blt(enemy.x, enemy.y, 0, 0, 16, 16, 16, 0)
+            if not enemy.spawned:
+                if isinstance(enemy, Regenerator):
+                    if enemy.color == Color.YELLOW:
+                        pyxel.blt(enemy.x, enemy.y, 0, 0, 144, 16, 16, 0)
+                    elif enemy.color == Color.GREEN:
+                        pyxel.blt(enemy.x, enemy.y, 0, 16, 144, 16, 16, 0)
+                    elif enemy.color == Color.BLUE:
+                        pyxel.blt(enemy.x, enemy.y, 0, 32, 144, 16, 16, 0)
+                    elif enemy.color == Color.PINK:
+                        pyxel.blt(enemy.x, enemy.y, 0, 48, 144, 16, 16, 0)
+                    else:
+                        pyxel.blt(enemy.x, enemy.y, 0, 0, 160, 16, 16, 0)
+                elif isinstance(enemy, Chameleon):
+                    if enemy.color == Color.YELLOW:
+                        pyxel.blt(enemy.x, enemy.y, 0, 0, 176, 16, 16, 0)
+                    elif enemy.color == Color.GREEN:
+                        pyxel.blt(enemy.x, enemy.y, 0, 16, 176, 16, 16, 0)
+                    elif enemy.color == Color.BLUE:
+                        pyxel.blt(enemy.x, enemy.y, 0, 32, 176, 16, 16, 0)
+                    elif enemy.color == Color.PINK:
+                        pyxel.blt(enemy.x, enemy.y, 0, 48, 176, 16, 16, 0)
+                    else:
+                        pyxel.blt(enemy.x, enemy.y, 0, 0, 192, 16, 16, 0)
+                else:
+                    if enemy.color == Color.YELLOW:
+                        pyxel.blt(enemy.x, enemy.y, 0, 0, 0, 16, 16, 0)
+                    elif enemy.color == Color.GREEN:
+                        pyxel.blt(enemy.x, enemy.y, 0, 16, 0, 16, 16, 0)
+                    elif enemy.color == Color.BLUE:
+                        pyxel.blt(enemy.x, enemy.y, 0, 32, 0, 16, 16, 0)
+                    elif enemy.color == Color.PINK:
+                        pyxel.blt(enemy.x, enemy.y, 0, 48, 0, 16, 16, 0)
+                    else:
+                        pyxel.blt(enemy.x, enemy.y, 0, 0, 16, 16, 16, 0)
 
 
     def draw_bullets(self, bullets):
@@ -166,7 +217,60 @@ class View:
         text = "Press [Enter] to continue."
         pyxel.rect(10, pyxel.height - 22, (4 * len(text)) + 4, 10, pyxel.COLOR_NAVY)
         pyxel.text(14, pyxel.height - 20, text, pyxel.COLOR_WHITE)
+
+    def draw_start(self):
+        TOTAL_HEIGHT = 102
+        min_y = pyxel.height // 2 - 55
+        pyxel.blt(pyxel.width // 2 - 64, min_y, 1, 0, 0, 32, 32, 0)
+        pyxel.blt(pyxel.width // 2 - 32, min_y, 1, 32, 0, 32, 32, 0)
+        pyxel.blt(pyxel.width // 2, min_y, 1, 64, 0, 32, 32, 0)
+        pyxel.blt(pyxel.width // 2 + 32, min_y, 1, 96, 0, 32, 32, 0)
+        max_y = pyxel.height // 2 - 51 + 60
+        create_text("  TOWER DEFENSE GAME ", pyxel.width // 2, min_y + 35, pyxel.COLOR_LIGHT_BLUE, pyxel.COLOR_DARK_BLUE)
+        create_text("    PLAY    ", pyxel.width // 2, max_y, pyxel.COLOR_PEACH, pyxel.COLOR_BROWN)
+        create_text("  SETTINGS  ", pyxel.width // 2, max_y + (BlOCK_SIZE + PADDING), pyxel.COLOR_YELLOW, pyxel.COLOR_ORANGE)
+        create_text("    INFO    ", pyxel.width // 2, max_y + (BlOCK_SIZE + PADDING) * 2, pyxel.COLOR_LIME, pyxel.COLOR_GREEN)
+        create_text("    EXIT    ", pyxel.width // 2, max_y + (BlOCK_SIZE + PADDING) * 3, pyxel.COLOR_PINK, pyxel.COLOR_RED)
+
         
+    def draw_settings(self, check_smooth, enemies, shooter_rate, shooter_speed, tower_rate, tower_speed, regen, chameleon, enemy_speed, lives):
+        min_x = pyxel.width // 2 - 100
+        min_y = pyxel.height // 2 - 90
+        max_y = pyxel.height // 2 + 90
+        spacing = BlOCK_SIZE + PADDING + 1
+        pyxel.rect(min_x - 1, min_y - 1, 202, 182, pyxel.COLOR_NAVY)
+        pyxel.rect(min_x, min_y, 200, 180, pyxel.COLOR_DARK_BLUE)
+        
+        start_y = min_y - 3
+        start_1x = min_x + 5
+        end_1x = pyxel.width // 2 - 19
+        start_2x = end_1x + 16 + 4
+        end_2x = pyxel.width // 2 + 100 - 5 - 16
+        center_1x = pyxel.width // 2 - 47
+        center_2x = pyxel.width // 2 + 47
+
+        create_text("  SETTINGS  ", pyxel.width // 2, start_y, pyxel.COLOR_PINK, pyxel.COLOR_RED)
+        create_text("ENEMIES", pyxel.width // 2, start_y + spacing, pyxel.COLOR_WHITE, pyxel.COLOR_NAVY)
+        if not check_smooth:
+            create_button(start_1x, start_y + spacing * 2, 0)
+        else:
+            create_button(start_1x, start_y + spacing * 2, 16)
+        create_text("SMOOTHNESS".ljust(11), start_1x + 16 + 8, start_y + spacing * 2, pyxel.COLOR_CYAN, pyxel.COLOR_NAVY, False)
+        create_configurable(f"NUMBER: {enemies}".ljust(11), start_1x, end_1x, start_y + spacing * 3, pyxel.COLOR_CYAN, pyxel.COLOR_NAVY)
+        create_configurable(f"SPEED: {enemy_speed:.1f}".ljust(11), start_2x, end_2x, start_y + spacing * 2, pyxel.COLOR_CYAN, pyxel.COLOR_NAVY)
+        create_configurable(f"REGEN: {regen}".ljust(11), start_2x, end_2x, start_y + spacing * 3, pyxel.COLOR_CYAN, pyxel.COLOR_NAVY)
+        create_configurable(f"CHAM: {chameleon:.1f}".ljust(11), start_2x, end_2x, start_y + spacing * 4, pyxel.COLOR_CYAN, pyxel.COLOR_NAVY)
 
 
+        create_text("SHOOTER", center_1x, start_y + spacing * 4, pyxel.COLOR_WHITE, pyxel.COLOR_NAVY)
+        create_configurable(f"RATE: {shooter_rate:.1f}".ljust(11), start_1x, end_1x, start_y + spacing * 5, pyxel.COLOR_CYAN, pyxel.COLOR_NAVY)
+        create_configurable(f"SPEED: {shooter_speed:.1f}".ljust(11), start_1x, end_1x, start_y + spacing * 6, pyxel.COLOR_CYAN, pyxel.COLOR_NAVY)
 
+        create_text("PLAYER", center_2x, start_y + spacing * 5, pyxel.COLOR_WHITE, pyxel.COLOR_NAVY)
+        create_configurable(f"LIVES: {lives}".ljust(11), start_2x, end_2x, start_y + spacing * 6, pyxel.COLOR_CYAN, pyxel.COLOR_NAVY)
+
+        create_text("TOWER", center_1x, start_y + spacing * 7, pyxel.COLOR_WHITE, pyxel.COLOR_NAVY)
+        create_configurable(f"RATE: {tower_rate:.1f}".ljust(11), start_1x, end_1x, start_y + spacing * 8, pyxel.COLOR_CYAN, pyxel.COLOR_NAVY)
+        create_configurable(f"SPEED: {tower_speed:.1f}".ljust(11), start_1x, end_1x, start_y + spacing * 9, pyxel.COLOR_CYAN, pyxel.COLOR_NAVY)
+
+        create_text("  EXIT  ", pyxel.width // 2, start_y + spacing * 10, pyxel.COLOR_PINK, pyxel.COLOR_RED)

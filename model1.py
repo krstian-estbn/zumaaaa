@@ -1,10 +1,11 @@
+import json
 import math
 from random import Random
 from typing import List, Tuple, Dict, Set
 
 import pyxel
 
-from utils import Color, Orientation, create_grid, overlap
+from utils import Color, Orientation, create_grid, overlap, GameState
 
 RNG = Random()
 
@@ -33,35 +34,158 @@ def in_rect(x: float, y: float, rx: int, ry: int, size: int = 16) -> bool:
 
 
 class Enemy:
-    def __init__(self, x: int, y: int, r: int, route: int):
+    def __init__(self, x: int, y: int, r: int, route: int, speed: float):
         self.x: int = x
         self.y: int = y
         self.r: int = r
         self.route: int = route
         self.route_idx: int = 0
+        self.timer: float = 0.0
+        self.speed: float = 1 / (speed * 30)
+        self.spawned: bool = True
+        self.hit_point: int = 1
         self.color: Color = RNG.choice(COLORS)
 
-    def move(self, route: List[RouteNode]) -> None:
+    def move(self, route: List[RouteNode], smooth: bool) -> None:
         node = route[self.route_idx]
         direction = node["direction"]
 
-        if direction == 1:
-            self.x += 1
-            if self.x >= node["x"]:
-                self.route_idx += 1
+        self.timer += self.speed
 
-        elif direction == 2:
-            self.y -= 1
-            if self.y <= node["y"]:
-                self.route_idx += 1
+        if smooth: # add: configurable speed for smooth movement
+            self.spawned = False
+            if direction == 1:
+                self.x += .5
+                if self.x >= node["x"]:
+                    self.route_idx += 1
+
+            elif direction == 2:
+                self.y -= .5
+                if self.y <= node["y"]:
+                    self.route_idx += 1
+
+            else:
+                self.y += .5
+                if self.y >= node["y"]:
+                    self.route_idx += 1
 
         else:
-            self.y += 1
-            if self.y >= node["y"]:
-                self.route_idx += 1
+            if self.timer >= 1:
+                self.spawned = False
+                self.timer = 0
+                if direction == 1:
+                    self.x = node["x"]
+                    self.route_idx += 1
+                
+                elif direction == 2:
+                    self.y = node["y"]
+                    self.route_idx += 1
+                
+                else:
+                    self.y = node["y"]
+                    self.route_idx += 1
+
+class Regenerator(Enemy):
+    def __init__(self, h: int, *args):
+        super().__init__(*args)
+        self.h: int = h
+
+    def move(self, route: List[RouteNode], smooth: bool) -> None:
+        node = route[self.route_idx]
+        direction = node["direction"]
+
+        self.timer += self.speed
+
+        if smooth: # add: regenerator logic + configurable speed for smooth movement
+            self.spawned = False
+            if direction == 1:
+                self.x += .5
+                if self.x >= node["x"]:
+                    self.route_idx += 1
+
+            elif direction == 2:
+                self.y -= .5
+                if self.y <= node["y"]:
+                    self.route_idx += 1
+
+            else:
+                self.y += .5
+                if self.y >= node["y"]:
+                    self.route_idx += 1
+
+        else:
+            if self.timer >= 1:
+                self.spawned = False
+                self.timer = 0
+                if (self.route_idx + 1) % self.h == 0:
+                    self.hit_point += 1
+
+                if direction == 1:
+                    self.x = node["x"]
+                    self.route_idx += 1
+                
+                elif direction == 2:
+                    self.y = node["y"]
+                    self.route_idx += 1
+                
+                else:
+                    self.y = node["y"]
+                    self.route_idx += 1
+
+
+class Chameleon(Enemy):
+    def __init__(self, freq: float, *args):
+        super().__init__(*args)
+        self.freq: float = 1 / (freq * 30)
+        self.freq_timer: float = 0
+
+    def move(self, route: List[RouteNode], smooth: bool) -> None:
+        node = route[self.route_idx]
+        direction = node["direction"]
+
+        self.timer += self.speed
+        self.freq_timer += self.freq
+
+        if self.freq_timer >= 1:
+            self.freq_timer = 0
+            self.color = RNG.choice(COLORS)
+
+        if smooth: # add: configurable speed for smooth movement
+            self.spawned = False
+            if direction == 1:
+                self.x += .5
+                if self.x >= node["x"]:
+                    self.route_idx += 1
+
+            elif direction == 2:
+                self.y -= .5
+                if self.y <= node["y"]:
+                    self.route_idx += 1
+
+            else:
+                self.y += .5
+                if self.y >= node["y"]:
+                    self.route_idx += 1
+
+        else:
+            if self.timer >= 1:
+                self.spawned = False
+                self.timer = 0
+                if direction == 1:
+                    self.x = node["x"]
+                    self.route_idx += 1
+                
+                elif direction == 2:
+                    self.y = node["y"]
+                    self.route_idx += 1
+                
+                else:
+                    self.y = node["y"]
+                    self.route_idx += 1
+
 
 class Bullet:
-    def __init__(self, color: Color, x: int, y: int, r: int, angle_deg: float, speed: float = 8):
+    def __init__(self, color: Color, x: int, y: int, r: int, angle_deg: float, speed: float):
         self.color: Color = color
         self.x: float = x
         self.y: float = y
@@ -80,44 +204,55 @@ class Bullet:
         return rect_overlap(ax, ay, ar, bx, by, br)
 
 class Tower:
-    def __init__(self, x: int, y: int):
+    def __init__(self, x: int, y: int, rate: float, speed: float):
         self.x: int = x
         self.y: int = y
         self.orientation: Orientation = Orientation.UP
         self.bullets: List[TowerBullet] = []
+        self.show_info: bool = False
         self.level: int = 1
-        self.timer: int = 0
-        self.bullet_interval: int = 30
+        self.timer: float = 0
+        self.rate: float = rate / 30
+        self.speed: float = pyxel.height / (speed * 30)
 
-    def shoot_bullets(self):
-        self.timer += 1
-        if self.timer >= self.bullet_interval:
+    def shoot_bullets(self) -> None:
+        self.timer += self.rate
+        if self.timer >= 1 or not self.bullets:
             self.timer = 0
-            self.bullets.append(TowerBullet(self.x + 4, self.y + 4, 4, self.orientation))
+            self.bullets.append(
+                TowerBullet(self.x + 4, self.y + 4, 4, self.orientation, self.speed))
+
+    def edit_orientation(self, orientation) -> None:
+        self.orientation = orientation
+
+    def upgrade(self) -> None:
+        self.level += 1
+        self.rate += 0.2 / 30
+
 
 class TowerBullet:
-    def __init__(self, x: int, y: int, r: int, orientation: Orientation):
+    def __init__(self, x: int, y: int, r: int, orientation: Orientation, speed: float):
         self.x: int = x
         self.y: int = y
         self.r: int = r
+        self.speed: float = speed
         self.color: Color = RNG.choice(COLORS)
         self.orientation: Orientation = orientation
-        self.bullet_speed: int = 8
-
+    
     def adjust_position(self) -> None:
         if self.orientation == Orientation.UP:
-            self.y -= self.bullet_speed
+            self.y -= self.speed
         elif self.orientation == Orientation.DOWN:
-            self.y += self.bullet_speed
+            self.y += self.speed
         elif self.orientation == Orientation.RIGHT:
-            self.x += self.bullet_speed
+            self.x += self.speed
         else:
-            self.x -= self.bullet_speed
-
+            self.x -= self.speed
+    
     def collides(self, ax: int, ay: int, ar: int,
                  bx: int, by: int, br: int) -> bool:
         return rect_overlap(ax, ay, ar, bx, by, br)
-       
+
 class Shooter:
     def __init__(self, x: int, y: int):
         self.x: int = x
@@ -126,17 +261,28 @@ class Shooter:
         self.color: Color = RNG.choice(COLORS)
         self.next_color: Color = RNG.choice(COLORS)
         self.bullets: List[Bullet] = []
+        self.timer: float = 0
+        self.rate: float = 0.9 / 30
+        self.speed: float = pyxel.height / (5 * 30)
+
+    def update(self) -> None:
+        self.timer += self.rate
+        for bullet in self.bullets:
+            if bullet.x <= 0 or bullet.y <= 0:
+                self.bullets.remove(bullet)
 
     def shoot_bullet(self, angle: float) -> None:
-        self.bullets.append(
-            Bullet(self.color, pyxel.width // 2 - 4, pyxel.height // 2 - 4, 4, angle))
-        self.color = self.next_color
-        self.next_color = RNG.choice(COLORS)
-        
-    def edit_orientation(self, angle: float):
+        if self.timer >= 1 or not self.bullets:
+            self.timer = 0
+            self.bullets.append(
+                Bullet(self.color, pyxel.width // 2 - 4, pyxel.height // 2 - 4, 4, angle, self.speed))
+            self.color = self.next_color
+            self.next_color = RNG.choice(COLORS)
+
+    def edit_orientation(self, angle: float) -> None:
         self.angle = angle
-        
-    def change_color(self):
+    
+    def change_color(self) -> None:
         self.color = self.next_color
         self.next_color = RNG.choice(COLORS)
 
@@ -144,42 +290,57 @@ class Shooter:
 
 class Model:
     def __init__(self):
+        with open('settings.json', 'r') as f:
+            data = json.load(f)
+
         self.grid: list[tuple[int, int]] = create_grid(16, pyxel.height, pyxel.width)
-        
+
+        self.state: GameState = GameState.START
+        self.smooth: bool = False
+
         self.game_over: bool = False
         self.exp: int = 0
-        self.lives: int = 2
+        self.lives: int = data["n_lives"]
 
-        self.limit: int = 5
+        self.limit: int = data["n_enemies"]
         self.enemies: List[Enemy] = []
-        self.towers: List[Tower] = []
-        
-        self.timer: int = 0
-        self.spawn_interval: int = 50
-        
-        self.shooter = Shooter(pyxel.width // 2, pyxel.height // 2)
-        self.hit_enemy = False
+        self.enemy_speed: float = 2.0
+        self.regen_h: float = 5
+        self.cham_freq: float = 3.0
+        self.hit_enemy: bool = False
 
+        self.shooter: Shooter = Shooter(pyxel.width // 2, pyxel.height // 2)
+        self.shooter_rate: float = 0.9
+        self.shooter_speed: float = 5.0
+
+        self.towers: List[Tower] = []
+        self.tower_rate: float = 0.5
+        self.tower_speed: float = 5.0
+        
+        self.spawn_interval: float = 1 / (2.0 * 30)
+        self.timer: float = 0
+        
         self.blocked_cells: Set[Vec2] = {(pyxel.width // 2 - 8, pyxel.height // 2 - 8)}
         self.tower_cells: Set[Vec2] = set()
         self.tunnel_cells: Set[Vec2] = set()
-        
-        self.routes: List[List[RouteNode]] = self.generate_routes()
-        self.tunnels = self.generate_tunnels()
 
+        self.routes: List[List[RouteNode]] = self.generate_routes()
+        self.tunnels: List[List[RouteNode]] = self.generate_tunnels()
+        
         self.start_round: bool = True
         self.rounds: int = 2
 
     @property
-    def is_game_over(self):
+    def is_game_over(self) -> bool:
         return self.game_over
-    
+
     def reset_round(self) -> None:
         self.limit: int = 5
         self.enemies: List[Enemy] = []
         self.timer: int = 0
 
         self.blocked_cells = {(pyxel.width // 2 - 8, pyxel.height // 2 - 8)} | self.tower_cells
+        self.tunnel_cells = set()
         self.routes = self.generate_routes()
         self.tunnels = self.generate_tunnels()
 
@@ -188,7 +349,7 @@ class Model:
 
         if self.lives <= 0 or self.rounds <= 0:
             self.game_over = True
-            
+
     def generate_routes(self) -> List[List[RouteNode]]:
         cell_size = 16
         padding = 32
@@ -246,7 +407,8 @@ class Model:
                 routes.append(walk_route(y, lower_min, lower_max))
 
         return routes
-    
+
+    # add: should occupy at most 2 tunnels per path
     def create_tunnel(self, route: List[RouteNode]) -> List[RouteNode]:
         length: int = len(route)
         size: int = RNG.randint(2, 5)
@@ -261,40 +423,68 @@ class Model:
 
         return tunnel
 
-    def generate_tunnels(self):
+    def generate_tunnels(self) -> List[List[RouteNode]]:
         return [self.create_tunnel(r) for r in self.routes]
-
 
     def _in_tunnel(self, x: float, y: float) -> bool:
         for tx, ty in self.tunnel_cells:
             if in_rect(x, y, tx, ty):
                 return True
         return False
-            
-    def spawn_enemies(self) -> None:
-        self.timer += 1
 
-        if self.timer >= self.spawn_interval and len(self.enemies) < self.limit:
+    # 1 = normal, 2 = regenerator, 3 = chameleon; 1/2 chance for normal, 1/4 chance for special
+    def spawn_enemies(self) -> None:
+        self.timer += self.spawn_interval
+
+        if self.timer >= 1 and len(self.enemies) < self.limit:
             self.timer = 0
             route: int = RNG.randint(0, 1) if len(self.routes) == 2 else 0
-
-            self.enemies.append(
-                Enemy(
-                    self.routes[route][0]["x"],
-                    self.routes[route][0]["y"],
-                    8,
-                    route,
+            enemy_type = RNG.choice([1, 1, 2, 3])
+            
+            if enemy_type == 3:
+                self.enemies.append(
+                    Chameleon(
+                        self.cham_freq, 
+                        self.routes[route][0]["x"], 
+                        self.routes[route][0]["y"], 
+                        8, 
+                        route, 
+                        self.enemy_speed
+                    )
                 )
-            )
-    
-    def place_tower(self, x: int, y: int):
-        self.towers.append(Tower(x, y))
-        
+            
+            elif enemy_type == 2:
+                self.enemies.append(
+                    Regenerator(
+                        self.regen_h, 
+                        self.routes[route][0]["x"], 
+                        self.routes[route][0]["y"], 
+                        8, 
+                        route, 
+                        self.enemy_speed
+                    )
+                )
+            
+            else:
+                self.enemies.append(
+                    Enemy(
+                        self.routes[route][0]["x"], 
+                        self.routes[route][0]["y"], 
+                        8, 
+                        route, 
+                        self.enemy_speed
+                    )
+                )
+
+    def place_tower(self, x: int, y: int) -> None:
+        self.towers.append(Tower(x, y, self.tower_rate, self.tower_speed))
+
     def update(self) -> None:
         hit_bullets: Set[int] = set()
         hit_enemies: Set[int] = set()
         hit_tower_bullets: Set[Tuple[int, int]] = set()
 
+        self.shooter.update()
         self.spawn_enemies()
 
         for tower in self.towers:
@@ -308,7 +498,7 @@ class Model:
                 self.limit -= 1
                 continue
 
-            enemy.move(self.routes[enemy.route])
+            enemy.move(self.routes[enemy.route], self.smooth)
 
         # shooter bullets
         for i, bullet in enumerate(self.shooter.bullets):
@@ -323,10 +513,13 @@ class Model:
                                    enemy.x, enemy.y, enemy.r):
 
                     if bullet.color == enemy.color and not self._in_tunnel(enemy.x, enemy.y):
-                        hit_enemies.add(j)
-                        self.hit_enemy = True
-                        self.exp += 1
-                        self.limit -= 1
+                        if enemy.hit_point <= 1:
+                            hit_enemies.add(j)
+                            self.hit_enemy = True
+                            self.exp += 1
+                            self.limit -= 1
+                        else:
+                            enemy.hit_point -= 1
 
                     hit_bullets.add(i)
 
@@ -344,10 +537,13 @@ class Model:
                                        enemy.x, enemy.y, enemy.r):
 
                         if bullet.color == enemy.color and not self._in_tunnel(enemy.x, enemy.y):
-                            hit_enemies.add(j)
-                            self.hit_enemy = True
-                            self.exp += 1
-                            self.limit -= 1
+                            if enemy.hit_point <= 1:
+                                hit_enemies.add(j)
+                                self.hit_enemy = True
+                                self.exp += 1
+                                self.limit -= 1
+                            else:
+                                enemy.hit_point -= 1
 
                         hit_tower_bullets.add((k, i))
 

@@ -13,6 +13,11 @@ class Orientation(Enum):
     LEFT = auto()
     RIGHT = auto()
 
+class GameState(Enum):
+    START = auto()
+    GAME = auto()
+    SETTINGS = auto()
+
 def create_grid(cell_size: int, screen_height: int, screen_width: int) -> list[tuple[int, int]]:
     li: list[tuple[int, int]] = []
     for x in range(0, screen_width, cell_size):
@@ -25,3 +30,4 @@ def overlap(int1: tuple[int, int], int2: tuple[int, int]) -> bool:
     l2, r2 = int2
 
     return max(l1, l2) <= min(r1, r2)
+
