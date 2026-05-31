@@ -12,3 +12,13 @@ Gameplay
 Possible Errors and Changes
 - The randomized path may be forced to take cells that are not allowed (tower cells, center cells) since the path changes but the tower placements do not per round (i think it does not change based sa sinend na gameplay so we can just make this a bonus feature ?)
 - ...
+
+Configurable Setting:
+- smoothness (for enemy movement)
+- number of enemies (also changes the settings.json)
+- enemy speed (for non-smooth movement only; no. of seconds to move a tile)
+- regen (no. of tiles to add hit point for Regenerators)
+- cham (frequency of change of colors for Chameleons)
+- shooter & tower rate (no. of bullets per second)
+- shooter & tower speed (no. of seconds for the bullet to travel the diagonal)
+- lives (also changes the settings.json)
