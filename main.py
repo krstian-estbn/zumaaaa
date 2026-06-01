@@ -1,5 +1,5 @@
 from model.model import Model
-from view1 import View
+from view import View
 from controller import Controller
 
 import pyxel

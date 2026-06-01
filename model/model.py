@@ -24,7 +24,7 @@ class Model:
         self.mode: Optional[Mode] = None
 
         self.game_over: bool = False
-        self.exp: int = 5
+        self.exp: int = 0
         self.lives: int = data["n_lives"]
 
         self.limit: int = data["n_enemies"]
@@ -53,7 +53,7 @@ class Model:
         self.tunnels: List[List[RouteNode]] = self.generate_tunnels()
         
         self.start_round: bool = True
-        self.rounds: int = 2
+        self.rounds: int = 12
 
     @property
     def is_game_over(self) -> bool:

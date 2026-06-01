@@ -1,7 +1,7 @@
 from model.model import Model
 from model.enemy import Regenerator, Chameleon
 from model.tower import Tower
-from view1 import View
+from view import View
 from utils import Orientation, GameState, Mode
 
 import pyxel
@@ -299,7 +299,7 @@ class Controller:
         if not self._model.is_game_over:
             self._view.draw_grid()
             if self._model.state == GameState.START:
-                self._view.draw_start()
+                self._view.draw_start(self._model.grid)
             elif self._model.state == GameState.GAME:
                 if self._model.start_round:
                     if self._model.mode is None:

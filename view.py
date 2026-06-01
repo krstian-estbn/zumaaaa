@@ -1,9 +1,13 @@
 import pyxel
+from random import Random
 from utils import Color, Orientation
 from model.enemy import Enemy, Regenerator, Chameleon
 
+RNG = Random()
+N = 6
 BlOCK_SIZE = 13
 PADDING = 3
+ENEMY_CELLS = [(0, 0), (16, 0), (32, 0), (48, 0), (0, 16), (0, 144), (16, 144), (32, 144), (48, 144), (0, 160), (0, 176), (16, 176), (32, 176), (48, 176), (0, 192)]
 
 def create_text(text, x, y, bg_color, text_color, center=True):
     text_width = 4 * len(text)
@@ -30,6 +34,10 @@ def create_configurable(text, x1, x2, y, bg_color, text_color):
     create_button(x2, y, 32)
 
 class View:
+    def __init__(self):
+        self.timer: int = 0
+        self.enemies: list[tuple[int, ...]] = []
+
     def draw_shooter(self, shooter):
         if shooter.color == Color.YELLOW:
             pyxel.blt(pyxel.width // 2 - 8, pyxel.height // 2 - 8, 0, 16, 16, 16, 16, 0, shooter.angle)
@@ -212,15 +220,29 @@ class View:
         pyxel.rect(10, pyxel.height - 22, (4 * len(text)) + 4, 10, pyxel.COLOR_NAVY)
         pyxel.text(14, pyxel.height - 20, text, pyxel.COLOR_WHITE)
 
-    def draw_start(self):
+    def draw_start(self, grid):
+        if self.timer == 0:
+            self.enemies = []
+            for _ in range(N):
+                valid_cells = [(x, y) for x, y in grid if not (32 <= x <= 160) and not (48 <= y <= 96)]
+                x, y = RNG.choice(valid_cells)
+                u, v = RNG.choice(ENEMY_CELLS)
+                self.enemies.append((x, y, u, v))
+
+        for x, y, u, v in self.enemies:
+            pyxel.blt(x, y, 0, u, v, 16, 16, 0)
+
+        self.timer += 1
+
+        if self.timer >= 60:
+            self.timer = 0
+
         TOTAL_HEIGHT = 102
-        min_y = pyxel.height // 2 - 55
-        pyxel.blt(pyxel.width // 2 - 64, min_y, 1, 0, 0, 32, 32, 0)
-        pyxel.blt(pyxel.width // 2 - 32, min_y, 1, 32, 0, 32, 32, 0)
-        pyxel.blt(pyxel.width // 2, min_y, 1, 64, 0, 32, 32, 0)
-        pyxel.blt(pyxel.width // 2 + 32, min_y, 1, 96, 0, 32, 32, 0)
+        min_y = pyxel.height // 2 - 50
         max_y = pyxel.height // 2 - 51 + 60
-        create_text("  TOWER DEFENSE GAME ", pyxel.width // 2, min_y + 35, pyxel.COLOR_LIGHT_BLUE, pyxel.COLOR_DARK_BLUE)
+        
+        pyxel.blt(pyxel.width // 2 - 64, min_y, 1, 0, 0, 128, 32, 0)
+        pyxel.blt(pyxel.width // 2 - 64, min_y + 32 + 4, 1, 0, 96, 128, 16, 0)
         create_text("    PLAY    ", pyxel.width // 2, max_y, pyxel.COLOR_PEACH, pyxel.COLOR_BROWN)
         create_text("  SETTINGS  ", pyxel.width // 2, max_y + (BlOCK_SIZE + PADDING), pyxel.COLOR_YELLOW, pyxel.COLOR_ORANGE)
         create_text("    INFO    ", pyxel.width // 2, max_y + (BlOCK_SIZE + PADDING) * 2, pyxel.COLOR_LIME, pyxel.COLOR_GREEN)
