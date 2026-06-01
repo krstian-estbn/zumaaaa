@@ -299,3 +299,7 @@ class View:
         create_text("  HARD  ", pyxel.width // 2 - 8 - 32, min_y + 70 + BlOCK_SIZE + PADDING, pyxel.COLOR_PINK, pyxel.COLOR_RED)
         create_text(" NORMAL ", pyxel.width // 2 + 8 + 32, min_y + 70, pyxel.COLOR_CYAN, pyxel.COLOR_NAVY)
         create_text("  HARD  ", pyxel.width // 2 + 8 + 32, min_y + 70 + BlOCK_SIZE + PADDING, pyxel.COLOR_PINK, pyxel.COLOR_RED)
+    
+    def draw_name_input(self, name):
+        pyxel.text(pyxel.width // 2 - 30, pyxel.height // 2 - 10, "ENTER NAME:", pyxel.COLOR_WHITE)
+        pyxel.text(pyxel.width // 2 - 30, pyxel.height // 2 + 10, f"{name}_", pyxel.COLOR_YELLOW)

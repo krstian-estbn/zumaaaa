@@ -14,13 +14,18 @@ class LeaderboardEntry(TypedDict):
 def load_leaderboard() -> Dict[str, List[Optional[LeaderboardEntry]]]:
     path = Path(LEADERBOARD)
     
-    if not path.exists():
-        return {
+    default: Dict[str, List[Optional[LeaderboardEntry]]] = {
             "campaign_normal": [],
             "campaign_hard": [],
             "endless_normal": [],
             "endless_hard": []
         }
+    
+    if not path.exists():
+        return default
+
+    if path.stat().st_size == 0:
+        return default
     
     with open(path, "r", encoding="utf-8") as file:
         return json.load(file)

@@ -1,0 +1,12 @@
+{
+    "campaign_normal": [
+        {
+            "name": "PWET",
+            "exp": 3,
+            "rounds": 0
+        }
+    ],
+    "campaign_hard": [],
+    "endless_normal": [],
+    "endless_hard": []
+}

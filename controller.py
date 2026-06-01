@@ -14,6 +14,7 @@ class Controller:
         self._view: View = view
 
         self.input: str = ""
+        self.name_input: str = ""
         self.place_tower: bool = False
         self.select_tower: Tower = None
         self.orientation: bool = False
@@ -107,6 +108,35 @@ class Controller:
         else:
             pass
 
+    def take_name_input(self):
+        key_map = {
+        pyxel.KEY_A: "A", pyxel.KEY_B: "B", pyxel.KEY_C: "C", pyxel.KEY_D: "D",
+        pyxel.KEY_E: "E", pyxel.KEY_F: "F", pyxel.KEY_G: "G", pyxel.KEY_H: "H",
+        pyxel.KEY_I: "I", pyxel.KEY_J: "J", pyxel.KEY_K: "K", pyxel.KEY_L: "L",
+        pyxel.KEY_M: "M", pyxel.KEY_N: "N", pyxel.KEY_O: "O", pyxel.KEY_P: "P",
+        pyxel.KEY_Q: "Q", pyxel.KEY_R: "R", pyxel.KEY_S: "S", pyxel.KEY_T: "T",
+        pyxel.KEY_U: "U", pyxel.KEY_V: "V", pyxel.KEY_W: "W", pyxel.KEY_X: "X",
+        pyxel.KEY_Y: "Y", pyxel.KEY_Z: "Z",
+        pyxel.KEY_0: "0", pyxel.KEY_1: "1", pyxel.KEY_2: "2", pyxel.KEY_3: "3",
+        pyxel.KEY_4: "4", pyxel.KEY_5: "5", pyxel.KEY_6: "6", pyxel.KEY_7: "7",
+        pyxel.KEY_8: "8", pyxel.KEY_9: "9",
+        pyxel.KEY_SPACE: " ",
+        }
+
+        for key, char in key_map.items():
+            if pyxel.btnp(key):
+                if len(self.name_input) < 12:
+                    self.name_input += char
+                return
+
+        if pyxel.btnp(pyxel.KEY_BACKSPACE) and self.name_input:
+            self.name_input = self.name_input[:-1]
+
+        if pyxel.btnp(pyxel.KEY_RETURN) and self.name_input.strip():
+            self._model.player_name = self.name_input.strip()
+            self._model.state = GameState.GAME
+            self._model.start_round = True
+            
     def update(self):
         if not self._model.is_game_over:
             if self._model.state == GameState.START:
@@ -114,7 +144,7 @@ class Controller:
                 spacing = 16
                 text_len = 12
                 if pyxel.btnp(pyxel.KEY_P) or (pyxel.btnp(pyxel.MOUSE_BUTTON_LEFT) and self._is_clicked_text(pyxel.width // 2, max_y, text_len)):
-                    self._model.state = GameState.GAME
+                    self._model.state = GameState.NAME_INPUT
                 elif pyxel.btnp(pyxel.KEY_S) or (pyxel.btnp(pyxel.MOUSE_BUTTON_LEFT) and self._is_clicked_text(pyxel.width // 2, max_y + spacing, text_len)):
                     self.previous_state = GameState.START
                     self._model.state = GameState.SETTINGS
@@ -288,6 +318,9 @@ class Controller:
                             f.truncate()
                     elif self._is_clicked_text(pyxel.width // 2, start_y + spacing * 10, len("  EXIT  ")):
                         self._model.state = self.previous_state
+            
+            elif self._model.state == GameState.NAME_INPUT:
+                self.take_name_input()
 
 
 
@@ -332,5 +365,8 @@ class Controller:
                             self._view.draw_orientation()
             elif self._model.state == GameState.SETTINGS:
                 self._view.draw_settings(self._model.smooth, self._model.limit, self._model.shooter_rate, self._model.shooter_speed, self._model.tower_rate, self._model.tower_speed, self._model.regen_h, self._model.cham_freq, self._model.enemy_speed, self._model.lives)
+            
+            elif self._model.state == GameState.NAME_INPUT:
+                self._view.draw_name_input(self.name_input)
         else:
             self._view.draw_game_over()

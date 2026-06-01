@@ -8,15 +8,13 @@ from .tower import Tower
 from .shooter import Shooter
 from .enemy import Enemy, Chameleon, Regenerator
 from .helper import in_rect
-from .leaderboards import save_score
+from .leaderboard import save_score
 from utils import GameState, Mode, create_grid
 
 
 # 1 = right, 2 = up, 3 = down
 class Model:
-    def __init__(self, player_name: str):
-        self.player_name: str = player_name
-
+    def __init__(self):
         with open('settings.json', 'r') as f:
             data = json.load(f)
 
@@ -59,6 +57,8 @@ class Model:
         self.rounds: int = 12
         self.rounds_survived: int = 0
 
+        self.player_name: str = ""
+        
     @property
     def is_game_over(self) -> bool:
         return self.game_over
