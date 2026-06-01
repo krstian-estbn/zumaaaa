@@ -300,6 +300,40 @@ class View:
         create_text(" NORMAL ", pyxel.width // 2 + 8 + 32, min_y + 70, pyxel.COLOR_CYAN, pyxel.COLOR_NAVY)
         create_text("  HARD  ", pyxel.width // 2 + 8 + 32, min_y + 70 + BlOCK_SIZE + PADDING, pyxel.COLOR_PINK, pyxel.COLOR_RED)
     
-    def draw_name_input(self, name):
-        pyxel.text(pyxel.width // 2 - 30, pyxel.height // 2 - 10, "ENTER NAME:", pyxel.COLOR_WHITE)
-        pyxel.text(pyxel.width // 2 - 30, pyxel.height // 2 + 10, f"{name}_", pyxel.COLOR_YELLOW)
+    def draw_name_input(self, name: str):
+        # outer border
+        outer_width = 190
+        outer_height = 70
+        outer_x = pyxel.width // 2 - outer_width // 2
+        outer_y = pyxel.height // 2 - outer_height // 2
+
+        pyxel.rect(outer_x + 3, outer_y + 3, outer_width, outer_height, pyxel.COLOR_BLACK)
+        pyxel.rect(outer_x, outer_y, outer_width, outer_height, pyxel.COLOR_NAVY)
+
+        # inner border
+        inner_margin = 4
+        inner_x = outer_x + inner_margin
+        inner_y = outer_y + inner_margin
+        inner_width = outer_width - inner_margin * 2
+        inner_height = outer_height - inner_margin * 2
+
+        pyxel.rect(inner_x, inner_y, inner_width, inner_height, pyxel.COLOR_DARK_BLUE)
+        pyxel.text(pyxel.width // 2 - 40 // 2, inner_y + 8, "ENTER NAME", pyxel.COLOR_WHITE)
+
+
+        # textbox part
+        textbox_width = 140
+        textbox_height = 16
+        textbox_x = pyxel.width // 2 - textbox_width // 2
+        textbox_y = inner_y + 24
+
+        pyxel.rect(textbox_x - 1, textbox_y - 1, textbox_width + 2, textbox_height + 2, pyxel.COLOR_WHITE)
+        pyxel.rect(textbox_x, textbox_y, textbox_width, textbox_height, pyxel.COLOR_BLACK)
+
+        # blinking _ effect thingyy
+        cursor = "_" if pyxel.frame_count % 30 < 15 else ""
+        display_text = name + cursor
+        text_x = pyxel.width // 2 - (len(display_text) * 4) // 2
+        pyxel.text(text_x, textbox_y + 5, display_text, pyxel.COLOR_YELLOW)
+
+        pyxel.text(pyxel.width // 2 - 44 // 2, inner_y + 50, "PRESS ENTER", pyxel.COLOR_LIGHT_BLUE)

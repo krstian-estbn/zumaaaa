@@ -1,6 +1,11 @@
 {
     "campaign_normal": [
         {
+            "name": "JAMES REID",
+            "exp": 6,
+            "rounds": 12
+        },
+        {
             "name": "PWET",
             "exp": 3,
             "rounds": 0
