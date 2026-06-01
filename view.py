@@ -4,7 +4,7 @@ from utils import Color, Orientation
 from model.enemy import Enemy, Regenerator, Chameleon
 
 RNG = Random()
-N = 6
+N = 10
 BlOCK_SIZE = 13
 PADDING = 3
 ENEMY_CELLS = [(0, 0), (16, 0), (32, 0), (48, 0), (0, 16), (0, 144), (16, 144), (32, 144), (48, 144), (0, 160), (0, 176), (16, 176), (32, 176), (48, 176), (0, 192)]
@@ -224,7 +224,7 @@ class View:
         if self.timer == 0:
             self.enemies = []
             for _ in range(N):
-                valid_cells = [(x, y) for x, y in grid if not (32 <= x <= 160) and not (48 <= y <= 96)]
+                valid_cells = [(x, y) for x, y in grid if not (32 <= x <= 160 and 48 <= y <= 96) and not (64 <= x <= 128 and 112 <= y <= 160)]
                 x, y = RNG.choice(valid_cells)
                 u, v = RNG.choice(ENEMY_CELLS)
                 self.enemies.append((x, y, u, v))

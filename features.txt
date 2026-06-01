@@ -1,38 +1,51 @@
-Start of each round
-- asks to place tower
-- if yes, left click the cell you want to put the tower (gray available cells, pink unavailable)
-- press enter if you want to start the game
+FEATURES:
+Start Screen:
+> Play
+    = Campaign (Normal, Hard)
+    = Endless (Normal, Hard)
+> Settings
+    = Configurables
+        - smoothness (enemy movement)
+        - number of enemies (changes settings.json)
+        - enemy speed (for non-smooth movement; no. of seconds to move a tile)
+        - regen (no. of tiles to add hit point for Regenerators)
+        - cham (frequency of change of colors for Chameleons)
+        - shooter & tower rate (no. of bullets per second)
+        - shooter & tower speed (no. of seconds for the bullet to travel the diagonal)
+        - lives (changes settings.json)
+        - rounds (to add...)
+> Info
+    = to add...
+> Leaderboard
+    = to add...
+> Exit
 
-Gameplay
-- The path taken by enemy changes (randomly) per round, but the towers remain in place
-- Next color indicator at the bottom right corner
-- Right click the tower to modify them (upgrade or change orientation)
-- Bullets are blocked by tunnels
+Game Modes:
+> Campaign Mode
+    = Normal Difficulty: fixed enemy path 
+    = Hard Difficulty: different enemy path per round (towers reset per round)
+> Endless Mode 
+    = Normal Difficulty: fixed enemy path 
+    = Hard Difficulty: different enemy path per round (towers reset per round)
 
-Possible Errors and Changes
-- The randomized path may be forced to take cells that are not allowed (tower cells, center cells) since the path changes but the tower placements do not per round (i think it does not change based sa sinend na gameplay so we can just make this a bonus feature ?)
-- ...
+CHANGES/ERRORS/NEED TO MODIFY:
+Need to Address:
+- Fix enemy hit box after going out of tunnel
+- Fix the paths to accommodate at most 2 tunnels
+- Change the logic for configurables*
+- Change the logic for enemy speed**
 
-Configurable Setting:
-- smoothness (for enemy movement)
-- number of enemies (also changes the settings.json)
-- enemy speed (for non-smooth movement only; no. of seconds to move a tile)
-- regen (no. of tiles to add hit point for Regenerators)
-- cham (frequency of change of colors for Chameleons)
-- shooter & tower rate (no. of bullets per second)
-- shooter & tower speed (no. of seconds for the bullet to travel the diagonal)
-- lives (also changes the settings.json)
+Missing Features:
+- Info Screen
+- Leaderboard Screen
+- Pause Screen
+- Game Over Screen
+- One more color for Bullets, Enemies, ...
+- Configurable no. of rounds
+- More Tower Levels + logic for upgrading + graphics
+- Increasing difficulty per round
+- Back Button
 
-Need to Add/Modify:
-- enemies in tunnel (cannot kill the enemy if one tile next to a tunnel)
-- at most 2 tunnels per path (we only have at most 1)
-- enemy speed and regenerator logic for smooth movement
-- configurable no. of rounds in settings (for campaign mode)
-- add increasing difficulty per round
-- add one color for enemy, bullet
-- add a persistent leaderboard
-- info screen in the start menu for tutorial (?)
-- pause screen
-- leaderboard screen
-- game over screen
-- bonus features
+
+* medyo weird kasi if babawasan mo ung speed pero bibilis sya... (i based the logic sa instructions)
+** if possible, when you change the enemy speed, it will change for smooth and non-smooth movement (if not, we can make two configurables; one for smooth and one for non-smooth)
