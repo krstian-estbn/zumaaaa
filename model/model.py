@@ -1,5 +1,5 @@
 import json
-from typing import List, Tuple, Set, Optional
+from typing import List, Tuple, Set, Optional, Dict
 
 import pyxel
 
@@ -14,9 +14,20 @@ from utils import GameState, Mode, create_grid
 
 # 1 = right, 2 = up, 3 = down
 class Model:
+    DEFAULT_SETTINGS: Dict[str, int | float] = {
+        "n_enemies": 5,
+        "n_lives": 2,
+        "enemy_speed": 2.0,
+        "shooter_rate": 0.9,
+        "shooter_speed": 5.0,
+        "tower_rate": 0.5,
+        "tower_speed": 5.0,
+        "regen_h": 5.0,
+        "cham_freq": 3.0
+    }
+    
     def __init__(self):
-        with open('settings.json', 'r') as f:
-            data = json.load(f)
+        self.settings: Dict[str, int | float] = self.load_settings()
 
         self.grid: list[tuple[int, int]] = create_grid(16, pyxel.height, pyxel.width)
 
@@ -26,24 +37,25 @@ class Model:
 
         self.game_over: bool = False
         self.exp: int = 0
-        self.lives: int = data["n_lives"]
-
-        self.limit: int = data["n_enemies"]
+        self.lives: int | float = self.settings["n_lives"]
+        self.limit: int = self.settings["n_enemies"]
+        
         self.enemies: List[Enemy] = []
-        self.enemy_speed: float = 2.0
-        self.regen_h: float = 5
-        self.cham_freq: float = 3.0
+        
+        self.enemy_speed: float = self.settings["enemy_speed"]
+        self.regen_h: float = self.settings["regen_h"]
+        self.cham_freq: float = self.settings["cham_freq"]
         self.hit_enemy: bool = False
 
         self.shooter: Shooter = Shooter(pyxel.width // 2, pyxel.height // 2)
-        self.shooter_rate: float = 0.9
-        self.shooter_speed: float = 5.0
+        self.shooter_rate: float = self.settings["shooter_rate"]
+        self.shooter_speed: float = self.settings["shooter_speed"]
 
         self.towers: List[Tower] = []
-        self.tower_rate: float = 0.5
-        self.tower_speed: float = 5.0
+        self.tower_rate: float = self.settings["tower_rate"]
+        self.tower_speed: float = self.settings["tower_speed"]
         
-        self.spawn_interval: float = 1 / (2.0 * 30)
+        self.spawn_interval: float = 1 / (self.enemy_speed * 30)
         self.timer: float = 0
         
         self.blocked_cells: Set[Vec2] = {(pyxel.width // 2 - 8, pyxel.height // 2 - 8)}
@@ -71,17 +83,9 @@ class Model:
         self.game_over = True
         
         if self.mode is not None:
-            save_score(
-                self.mode,
-                self.player_name,
-                self.exp,
-                self.rounds_survived
-            )
+            save_score(self.mode, self.player_name, self.exp, self.rounds_survived)
             
     def reset_round(self) -> None:
-        with open('settings.json', 'r') as f:
-            data = json.load(f)
-
         self.rounds_survived += 1
         
         if self.mode in (Mode.CAMPAIGN_HARD, Mode.ENDLESS_HARD):
@@ -89,14 +93,15 @@ class Model:
             self.tunnel_cells = set()
             self.routes = self.generate_routes()
             self.tunnels = self.generate_tunnels()
+            
             for tower in self.towers:
                 self.exp += tower.level * 5
+                
             self.towers = []
 
-        self.limit: int = data["n_enemies"]
+        self.limit: int | float = self.settings["n_enemies"]
         self.enemies: List[Enemy] = []
         self.timer: float = 0
-
         self.start_round = True
 
         if self.lives <= 0:
@@ -323,6 +328,62 @@ class Model:
 
         if self.lives <= 0:
             self.end_game()
+            return
             
         if self.limit <= 0:
             self.reset_round()
+            
+    # configurations for settings
+    def set_config(self, key: str, value: float) -> None:
+        if key == "limit":
+            self.limit = max(1, int(value))
+
+        elif key == "lives":
+            self.lives = max(1, int(value))
+
+        elif key == "shooter_rate":
+            self.shooter_rate = value
+            self.shooter.rate = value / 30
+
+        elif key == "shooter_speed":
+            self.shooter_speed = value
+            self.shooter.speed = pyxel.height / (value * 30)
+
+        elif key == "tower_rate":
+            self.tower_rate = value
+
+        elif key == "tower_speed":
+            self.tower_speed = value
+
+        elif key == "enemy_speed":
+            self.enemy_speed = value
+            self.spawn_interval = 1 / (value * 30)
+
+    def load_settings(self) -> Dict[str, int | float]:
+        try:
+            with open("settings.json", "r") as f:
+                data: Dict[str, int | float] = json.load(f)
+        except FileNotFoundError:
+            data: Dict[str, int | float] = {}
+        
+        merged_settings = self.DEFAULT_SETTINGS.copy()
+        merged_settings.update(data)
+        return merged_settings
+
+        
+    def save_settings(self) -> None:
+        self.settings.update({
+            "n_enemies": self.limit,
+            "n_lives": self.lives,
+            "enemy_speed": self.enemy_speed,
+            "shooter_rate": self.shooter_rate,
+            "shooter_speed": self.shooter_speed,
+            "tower_rate": self.tower_rate,
+            "tower_speed": self.tower_speed,
+            "regen_h": self.regen_h,
+            "cham_freq": self.cham_freq,
+        })
+
+
+        with open("settings.json", "w") as f:
+            json.dump(self.settings, f, indent=4)

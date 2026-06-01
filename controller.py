@@ -215,71 +215,31 @@ class Controller:
                     if self._is_clicked_button(start_1x, start_y + spacing * 2):
                         self._model.smooth = not self._model.smooth
                     elif self._is_clicked_button(start_1x, start_y + spacing * 3):
-                        with open('settings.json', 'r+') as f:
-                            data = json.load(f)
-                            self._model.limit = max(5, self._model.limit - 1)
-                            data['n_enemies'] = self._model.limit
-                            f.seek(0)
-                            json.dump(data, f)
-                            f.truncate()
+                        self._model.set_config("limit", self._model.limit - 1)
+                        self._model.save_settings()
                     elif self._is_clicked_button(end_1x, start_y + spacing * 3):
-                        with open('settings.json', 'r+') as f:
-                            data = json.load(f)
-                            self._model.limit += 1
-                            data['n_enemies'] = self._model.limit
-                            f.seek(0)
-                            json.dump(data, f)
-                            f.truncate()
+                        self._model.set_config("limit", self._model.limit + 1)
+                        self._model.save_settings()
                     elif self._is_clicked_button(start_1x, start_y + spacing * 5):
-                        self._model.shooter_rate = max(0.9, self._model.shooter_rate - 0.1)
-                        self._model.shooter.rate = self._model.shooter_rate / 30
+                        self._model.set_config("shooter_rate", self._model.shooter_rate - 0.1)
                     elif self._is_clicked_button(end_1x, start_y + spacing * 5):
-                        self._model.shooter_rate += 0.1
-                        self._model.shooter.rate = self._model.shooter_rate / 30
+                        self._model.set_config("shooter_rate", self._model.shooter_rate + 0.1)
                     elif self._is_clicked_button(start_1x, start_y + spacing * 6):
-                        self._model.shooter_speed = max(1.0, self._model.shooter_speed - 0.1)
-                        self._model.shooter.speed = pyxel.height / (self._model.shooter_speed * 30)
-                        for bullet in self._model.shooter.bullets:
-                            bullet.speed = self._model.shooter.speed
+                        self._model.set_config("shooter_speed", self._model.shooter_speed - 0.1)
                     elif self._is_clicked_button(end_1x, start_y + spacing * 6):
-                        self._model.shooter_speed += 0.1
-                        self._model.shooter.speed = pyxel.height / (self._model.shooter_speed * 30)
-                        for bullet in self._model.shooter.bullets:
-                            bullet.speed = self._model.shooter.speed
+                        self._model.set_config("shooter_speed", self._model.shooter_speed + 0.1)
                     elif self._is_clicked_button(start_1x, start_y + spacing * 8):
-                        self._model.tower_rate = max(0.5, self._model.tower_rate - 0.1)
-                        for tower in self._model.towers:
-                            tower.rate = self._model.tower_rate / 30
+                        self._model.set_config("tower_rate", self._model.tower_rate - 0.1)
                     elif self._is_clicked_button(end_1x, start_y + spacing * 8):
-                        self._model.tower_rate += 0.1
-                        for tower in self._model.towers:
-                            tower.rate = self._model.tower_rate / 30
+                        self._model.set_config("tower_rate", self._model.tower_rate + 0.1)
                     elif self._is_clicked_button(start_1x, start_y + spacing * 9):
-                        self._model.tower_speed = max(1.0, self._model.tower_speed - 0.1)
-                        for tower in self._model.towers:
-                            tower.speed = pyxel.height / (self._model.tower_speed * 30)
-                            for bullet in tower.bullets:
-                                bullet.speed = tower.speed
+                        self._model.set_config("tower_speed", self._model.tower_speed - 0.1)
                     elif self._is_clicked_button(end_1x, start_y + spacing * 9):
-                        self._model.tower_speed += 0.1
-                        for tower in self._model.towers:
-                            tower.speed = pyxel.height / (self._model.tower_speed * 30)
-                            for bullet in tower.bullets:
-                                bullet.speed = tower.speed
+                        self._model.set_config("tower_speed", self._model.tower_speed + 0.1)
                     elif self._is_clicked_button(start_2x, start_y + spacing * 2):
-                        self._model.enemy_speed = max(0.1, self._model.enemy_speed - 0.1)
-                        self._model.timer = 1
-                        self._model.spawn_interval = 1 / (self._model.enemy_speed * 30)
-                        for enemy in self._model.enemies:
-                            enemy.speed = self._model.spawn_interval
-                            enemy.timer = 1
+                        self._model.set_config("enemy_speed", self._model.enemy_speed - 0.1)
                     elif self._is_clicked_button(end_2x, start_y + spacing * 2):
-                        self._model.enemy_speed += 0.1
-                        self._model.timer = 1
-                        self._model.spawn_interval = 1 / (self._model.enemy_speed * 30)
-                        for enemy in self._model.enemies:
-                            enemy.speed = self._model.spawn_interval
-                            enemy.timer = 1
+                        self._model.set_config("enemy_speed", self._model.enemy_speed + 0.1)
                     elif self._is_clicked_button(start_2x, start_y + spacing * 3):
                         self._model.regen_h = max(5, self._model.regen_h - 1)
                         for enemy in self._model.enemies:
@@ -301,22 +261,11 @@ class Controller:
                             if isinstance(enemy, Chameleon):
                                 enemy.freq = 1 / (self._model.cham_freq * 30)
                     elif self._is_clicked_button(start_2x, start_y + spacing * 6):
-                        with open('settings.json', 'r+') as f:
-                            data = json.load(f)
-                            self._model.lives = max(2, self._model.lives - 1)
-                            data['n_lives'] = self._model.lives
-                            f.seek(0)
-                            json.dump(data, f)
-                            f.truncate()
+                        self._model.set_config("lives", self._model.lives - 1)
                     elif self._is_clicked_button(end_2x, start_y + spacing * 6):
-                        with open('settings.json', 'r+') as f:
-                            data = json.load(f)
-                            self._model.lives += 1
-                            data['n_lives'] = self._model.lives
-                            f.seek(0)
-                            json.dump(data, f)
-                            f.truncate()
+                        self._model.set_config("lives", self._model.lives + 1)
                     elif self._is_clicked_text(pyxel.width // 2, start_y + spacing * 10, len("  EXIT  ")):
+                        self._model.save_settings()
                         self._model.state = self.previous_state
             
             elif self._model.state == GameState.NAME_INPUT:

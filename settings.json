@@ -1,1 +1,11 @@
-{"n_enemies": 5, "n_lives": 2}
+{
+    "n_enemies": 5,
+    "n_lives": 2,
+    "enemy_speed": 2.0,
+    "shooter_rate": 0.9,
+    "shooter_speed": 5.0,
+    "tower_rate": 0.5,
+    "tower_speed": 5.0,
+    "regen_h": 5.0,
+    "cham_freq": 3.0
+}

@@ -30,9 +30,9 @@ Game Modes:
 
 CHANGES/ERRORS/NEED TO MODIFY:
 Need to Address:
-- Fix enemy hit box after going out of tunnel
+- Fix enemy hit box after going out of tunnel (fixed medyo)
 - Fix the paths to accommodate at most 2 tunnels
-- Change the logic for configurables*
+- Change the logic for configurables* (fixed narin medyo)
 - Change the logic for enemy speed**
 
 Missing Features:
