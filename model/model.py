@@ -189,6 +189,16 @@ class Model:
                 return True
         return False
 
+    def _enemy_in_tunnel(self, enemy: Enemy) -> bool:
+        for tx, ty in self.tunnel_cells:
+            if in_rect(enemy.x, enemy.y, tx, ty):
+                return True
+
+            if in_rect(enemy.x + enemy.r, enemy.y + enemy.r, tx, ty):
+                return True
+
+        return False
+    
     # 1 = normal, 2 = regenerator, 3 = chameleon; 1/2 chance for normal, 1/4 chance for special
     def spawn_enemies(self) -> None:
         self.timer += self.spawn_interval
@@ -269,7 +279,7 @@ class Model:
                 if bullet.collides(int(bullet.x), int(bullet.y), bullet.r,
                                    int(enemy.x), int(enemy.y), enemy.r):
 
-                    if bullet.color == enemy.color and not self._in_tunnel(enemy.x, enemy.y):
+                    if bullet.color == enemy.color and not self._enemy_in_tunnel(enemy):
                         if enemy.hit_point <= 1:
                             hit_enemies.add(j)
                             self.hit_enemy = True
@@ -293,7 +303,7 @@ class Model:
                     if bullet.collides(int(bullet.x), int(bullet.y), bullet.r,
                                        int(enemy.x), int(enemy.y), enemy.r):
 
-                        if bullet.color == enemy.color and not self._in_tunnel(enemy.x, enemy.y):
+                        if bullet.color == enemy.color and not self._enemy_in_tunnel(enemy):
                             if enemy.hit_point <= 1:
                                 hit_enemies.add(j)
                                 self.hit_enemy = True
