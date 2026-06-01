@@ -271,8 +271,8 @@ class View:
 
     def draw_modes(self):
         min_y = pyxel.height // 2 - 55
-        pyxel.blt(pyxel.width // 2 - 64 - 8, min_y, 1, 0, 32, 64, 64, 0)
-        pyxel.blt(pyxel.width // 2 + 8, min_y, 1, 64, 32, 64, 64, 0)
+        pyxel.blt(pyxel.width // 2 - 64 - 8, min_y, 1, 64, 32, 64, 64, 0)
+        pyxel.blt(pyxel.width // 2 + 8, min_y, 1, 0, 32, 64, 64, 0)
         create_text(" NORMAL ", pyxel.width // 2 - 8 - 32, min_y + 70, pyxel.COLOR_CYAN, pyxel.COLOR_NAVY)
         create_text("  HARD  ", pyxel.width // 2 - 8 - 32, min_y + 70 + BlOCK_SIZE + PADDING, pyxel.COLOR_PINK, pyxel.COLOR_RED)
         create_text(" NORMAL ", pyxel.width // 2 + 8 + 32, min_y + 70, pyxel.COLOR_CYAN, pyxel.COLOR_NAVY)

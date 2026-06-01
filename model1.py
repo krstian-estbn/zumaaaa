@@ -89,6 +89,8 @@ class Regenerator(Enemy):
     def __init__(self, h: int, *args):
         super().__init__(*args)
         self.h: int = h
+        self.smooth_speed: float = 0.5
+        self.acc: float = 16
 
     def move(self, route: List[RouteNode], smooth: bool) -> None:
         node = route[self.route_idx]
@@ -96,23 +98,25 @@ class Regenerator(Enemy):
 
         self.timer += self.speed
 
-        if smooth: # add: regenerator logic + configurable speed for smooth movement
+        if smooth: # add: configurable speed for smooth movement
             self.spawned = False
-            if (self.route_idx + 1) % self.h == 0:
+            self.acc += self.smooth_speed
+            if math.ceil((self.acc) / 16) == self.h + 1:
+                self.acc = 0
                 self.hit_point += 1
           
             if direction == 1:
-                self.x += .5
+                self.x += self.smooth_speed
                 if self.x >= node["x"]:
                     self.route_idx += 1
 
             elif direction == 2:
-                self.y -= .5
+                self.y -= self.smooth_speed
                 if self.y <= node["y"]:
                     self.route_idx += 1
 
             else:
-                self.y += .5
+                self.y += self.smooth_speed
                 if self.y >= node["y"]:
                     self.route_idx += 1
 
