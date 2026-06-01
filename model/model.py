@@ -1,300 +1,17 @@
 import json
-import math
-from random import Random
-from typing import List, Tuple, Dict, Set, Optional
+from typing import List, Tuple, Set, Optional
 
 import pyxel
 
-from utils import Color, Orientation, GameState, Mode, create_grid, overlap
+from .constants import RNG, Vec2, RouteNode
+from .tower import Tower
+from .shooter import Shooter
+from .enemy import Enemy, Chameleon, Regenerator
+from .helper import in_rect
+from utils import GameState, Mode, create_grid
 
-RNG = Random()
-
-COLORS: List[Color] = [
-    Color.PINK,
-    Color.YELLOW,
-    Color.BLUE,
-    Color.WHITE,
-    Color.GREEN,
-]
-
-Vec2 = Tuple[int, int]
-RouteNode = Dict[str, int]
-
-
-# helper stuff
-def rect_overlap(ax: int, ay: int, ar: int,
-                 bx: int, by: int, br: int) -> bool:
-    return overlap((ax, ax + ar * 2), (bx, bx + br * 2)) and overlap(
-        (ay, ay + ar * 2), (by, by + br * 2)
-    )
-
-
-def in_rect(x: float, y: float, rx: int, ry: int, size: int = 16) -> bool:
-    return rx <= x <= rx + size and ry <= y <= ry + size
-
-
-class Enemy:
-    def __init__(self, x: int, y: int, r: int, route: int, speed: float):
-        self.x: int = x
-        self.y: int = y
-        self.r: int = r
-        self.route: int = route
-        self.route_idx: int = 0
-        self.timer: float = 0.0
-        self.speed: float = 1 / (speed * 30)
-        self.spawned: bool = True
-        self.hit_point: int = 1
-        self.color: Color = RNG.choice(COLORS)
-
-    def move(self, route: List[RouteNode], smooth: bool) -> None:
-        node = route[self.route_idx]
-        direction = node["direction"]
-
-        self.timer += self.speed
-
-        if smooth: # add: configurable speed for smooth movement
-            self.spawned = False
-            if direction == 1:
-                self.x += .5
-                if self.x >= node["x"]:
-                    self.route_idx += 1
-
-            elif direction == 2:
-                self.y -= .5
-                if self.y <= node["y"]:
-                    self.route_idx += 1
-
-            else:
-                self.y += .5
-                if self.y >= node["y"]:
-                    self.route_idx += 1
-
-        else:
-            if self.timer >= 1:
-                self.spawned = False
-                self.timer = 0
-                if direction == 1:
-                    self.x = node["x"]
-                    self.route_idx += 1
-                
-                elif direction == 2:
-                    self.y = node["y"]
-                    self.route_idx += 1
-                
-                else:
-                    self.y = node["y"]
-                    self.route_idx += 1
-
-class Regenerator(Enemy):
-    def __init__(self, h: float, *args):
-        super().__init__(*args)
-        self.h: float = h
-        self.smooth_speed: float = 0.5
-        self.acc: float = 16
-
-    def move(self, route: List[RouteNode], smooth: bool) -> None:
-        node = route[self.route_idx]
-        direction = node["direction"]
-
-        self.timer += self.speed
-
-        if smooth: # add: configurable speed for smooth movement
-            self.spawned = False
-            self.acc += self.smooth_speed
-            if self.acc >= self.h * 16:
-                self.acc = 0
-                self.hit_point += 1
-          
-            if direction == 1:
-                self.x += self.smooth_speed
-                if self.x >= node["x"]:
-                    self.route_idx += 1
-
-            elif direction == 2:
-                self.y -= self.smooth_speed
-                if self.y <= node["y"]:
-                    self.route_idx += 1
-
-            else:
-                self.y += self.smooth_speed
-                if self.y >= node["y"]:
-                    self.route_idx += 1
-
-        else:
-            if self.timer >= 1:
-                self.spawned = False
-                self.timer = 0
-                if (self.route_idx + 1) % self.h == 0:
-                    self.hit_point += 1
-
-                if direction == 1:
-                    self.x = node["x"]
-                    self.route_idx += 1
-                
-                elif direction == 2:
-                    self.y = node["y"]
-                    self.route_idx += 1
-                
-                else:
-                    self.y = node["y"]
-                    self.route_idx += 1
-
-
-class Chameleon(Enemy):
-    def __init__(self, freq: float, *args):
-        super().__init__(*args)
-        self.freq: float = 1 / (freq * 30)
-        self.freq_timer: float = 0
-
-    def move(self, route: List[RouteNode], smooth: bool) -> None:
-        node = route[self.route_idx]
-        direction = node["direction"]
-
-        self.timer += self.speed
-        self.freq_timer += self.freq
-
-        if self.freq_timer >= 1:
-            self.freq_timer = 0
-            self.color = RNG.choice(COLORS)
-
-        if smooth: # add: configurable speed for smooth movement
-            self.spawned = False
-            if direction == 1:
-                self.x += .5
-                if self.x >= node["x"]:
-                    self.route_idx += 1
-
-            elif direction == 2:
-                self.y -= .5
-                if self.y <= node["y"]:
-                    self.route_idx += 1
-
-            else:
-                self.y += .5
-                if self.y >= node["y"]:
-                    self.route_idx += 1
-
-        else:
-            if self.timer >= 1:
-                self.spawned = False
-                self.timer = 0
-                if direction == 1:
-                    self.x = node["x"]
-                    self.route_idx += 1
-                
-                elif direction == 2:
-                    self.y = node["y"]
-                    self.route_idx += 1
-                
-                else:
-                    self.y = node["y"]
-                    self.route_idx += 1
-
-
-class Bullet:
-    def __init__(self, color: Color, x: int, y: int, r: int, angle_deg: float, speed: float):
-        self.color: Color = color
-        self.x: float = x
-        self.y: float = y
-        self.r: int = r
-
-        angle = math.radians(angle_deg)
-        self.dx: float = math.cos(angle) * speed
-        self.dy: float = math.sin(angle) * speed
-
-    def adjust_position(self) -> None:
-        self.x += self.dx
-        self.y += self.dy
-
-    def collides(self, ax: int, ay: int, ar: int,
-                 bx: int, by: int, br: int) -> bool:
-        return rect_overlap(ax, ay, ar, bx, by, br)
-
-class Tower:
-    def __init__(self, x: int, y: int, rate: float, speed: float):
-        self.x: int = x
-        self.y: int = y
-        self.orientation: Orientation = Orientation.UP
-        self.bullets: List[TowerBullet] = []
-        self.show_info: bool = False
-        self.level: int = 1
-        self.timer: float = 0
-        self.rate: float = rate / 30
-        self.speed: float = pyxel.height / (speed * 30)
-
-    def shoot_bullets(self) -> None:
-        self.timer += self.rate
-        if self.timer >= 1 or not self.bullets:
-            self.timer = 0
-            self.bullets.append(
-                TowerBullet(self.x + 4, self.y + 4, 4, self.orientation, self.speed))
-
-    def edit_orientation(self, orientation: Orientation) -> None:
-        self.orientation = orientation
-
-    def upgrade(self) -> None:
-        self.level += 1
-        self.rate += 0.2 / 30
-
-
-class TowerBullet:
-    def __init__(self, x: int, y: int, r: int, orientation: Orientation, speed: float):
-        self.x: int = x
-        self.y: int = y
-        self.r: int = r
-        self.speed: float = speed
-        self.color: Color = RNG.choice(COLORS)
-        self.orientation: Orientation = orientation
-    
-    def adjust_position(self) -> None:
-        if self.orientation == Orientation.UP:
-            self.y -= self.speed
-        elif self.orientation == Orientation.DOWN:
-            self.y += self.speed
-        elif self.orientation == Orientation.RIGHT:
-            self.x += self.speed
-        else:
-            self.x -= self.speed
-    
-    def collides(self, ax: int, ay: int, ar: int,
-                 bx: int, by: int, br: int) -> bool:
-        return rect_overlap(ax, ay, ar, bx, by, br)
-
-class Shooter:
-    def __init__(self, x: int, y: int):
-        self.x: int = x
-        self.y: int = y
-        self.angle: float = 270
-        self.color: Color = RNG.choice(COLORS)
-        self.next_color: Color = RNG.choice(COLORS)
-        self.bullets: List[Bullet] = []
-        self.timer: float = 0
-        self.rate: float = 0.9 / 30
-        self.speed: float = pyxel.height / (5 * 30)
-
-    def update(self) -> None:
-        self.timer += self.rate
-        for bullet in self.bullets[:]: # so walang maskip na bullets when removing
-            if bullet.x <= 0 or bullet.y <= 0:
-                self.bullets.remove(bullet)
-
-    def shoot_bullet(self, angle: float) -> None:
-        if self.timer >= 1 or not self.bullets:
-            self.timer = 0
-            self.bullets.append(
-                Bullet(self.color, pyxel.width // 2 - 4, pyxel.height // 2 - 4, 4, angle, self.speed))
-            self.color = self.next_color
-            self.next_color = RNG.choice(COLORS)
-
-    def edit_orientation(self, angle: float) -> None:
-        self.angle = angle
-    
-    def change_color(self) -> None:
-        self.color = self.next_color
-        self.next_color = RNG.choice(COLORS)
 
 # 1 = right, 2 = up, 3 = down
-
 class Model:
     def __init__(self):
         with open('settings.json', 'r') as f:
@@ -529,7 +246,7 @@ class Model:
 
             for j, enemy in enumerate(self.enemies):
                 if bullet.collides(int(bullet.x), int(bullet.y), bullet.r,
-                                   enemy.x, enemy.y, enemy.r):
+                                   int(enemy.x), int(enemy.y), enemy.r):
 
                     if bullet.color == enemy.color and not self._in_tunnel(enemy.x, enemy.y):
                         if enemy.hit_point <= 1:
@@ -552,8 +269,8 @@ class Model:
                     continue
 
                 for j, enemy in enumerate(self.enemies):
-                    if bullet.collides(bullet.x, bullet.y, bullet.r,
-                                       enemy.x, enemy.y, enemy.r):
+                    if bullet.collides(int(bullet.x), int(bullet.y), bullet.r,
+                                       int(enemy.x), int(enemy.y), enemy.r):
 
                         if bullet.color == enemy.color and not self._in_tunnel(enemy.x, enemy.y):
                             if enemy.hit_point <= 1:

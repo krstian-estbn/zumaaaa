@@ -1,4 +1,6 @@
-from model1 import Model, Enemy, Tower, Regenerator, Chameleon
+from model.model import Model
+from model.enemy import Regenerator, Chameleon
+from model.tower import Tower
 from view1 import View
 from utils import Orientation, GameState, Mode
 

@@ -1,6 +1,6 @@
 import pyxel
 from utils import Color, Orientation
-from model1 import Enemy, Regenerator, Chameleon
+from model.enemy import Enemy, Regenerator, Chameleon
 
 BlOCK_SIZE = 13
 PADDING = 3

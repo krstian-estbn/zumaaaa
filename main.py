@@ -1,4 +1,4 @@
-from model1 import Model
+from model.model import Model
 from view1 import View
 from controller import Controller
 
