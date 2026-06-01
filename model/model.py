@@ -8,12 +8,15 @@ from .tower import Tower
 from .shooter import Shooter
 from .enemy import Enemy, Chameleon, Regenerator
 from .helper import in_rect
+from .leaderboards import save_score
 from utils import GameState, Mode, create_grid
 
 
 # 1 = right, 2 = up, 3 = down
 class Model:
-    def __init__(self):
+    def __init__(self, player_name: str):
+        self.player_name: str = player_name
+
         with open('settings.json', 'r') as f:
             data = json.load(f)
 
@@ -54,15 +57,33 @@ class Model:
         
         self.start_round: bool = True
         self.rounds: int = 12
+        self.rounds_survived: int = 0
 
     @property
     def is_game_over(self) -> bool:
         return self.game_over
 
+    
+    def end_game(self) -> None:
+        if self.game_over:
+            return
+
+        self.game_over = True
+        
+        if self.mode is not None:
+            save_score(
+                self.mode,
+                self.player_name,
+                self.exp,
+                self.rounds_survived
+            )
+            
     def reset_round(self) -> None:
         with open('settings.json', 'r') as f:
             data = json.load(f)
 
+        self.rounds_survived += 1
+        
         if self.mode in (Mode.CAMPAIGN_HARD, Mode.ENDLESS_HARD):
             self.blocked_cells = {(pyxel.width // 2 - 8, pyxel.height // 2 - 8)} | self.tower_cells
             self.tunnel_cells = set()
@@ -79,12 +100,12 @@ class Model:
         self.start_round = True
 
         if self.lives <= 0:
-            self.game_over = True
+            self.end_game()
         
         if self.mode in (Mode.CAMPAIGN_HARD, Mode.CAMPAIGN_NORMAL):
             self.rounds -= 1
             if self.rounds <= 0:
-                self.game_over = True
+                self.end_game()
 
     def generate_routes(self) -> List[List[RouteNode]]:
         cell_size = 16
@@ -290,5 +311,8 @@ class Model:
         for k, tower in enumerate(self.towers):
             tower.bullets = [b for i, b in enumerate(tower.bullets) if (k, i) not in hit_tower_bullets]
 
-        if self.lives <= 0 or self.limit <= 0:
+        if self.lives <= 0:
+            self.end_game()
+            
+        if self.limit <= 0:
             self.reset_round()
