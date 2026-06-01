@@ -37,7 +37,6 @@ Need to Address:
 
 Missing Features:
 - Info Screen
-- Leaderboard Screen
 - Pause Screen
 - Game Over Screen
 - One more color for Bullets, Enemies, ...
@@ -49,3 +48,4 @@ Missing Features:
 
 * medyo weird kasi if babawasan mo ung speed pero bibilis sya... (i based the logic sa instructions)
 ** if possible, when you change the enemy speed, it will change for smooth and non-smooth movement (if not, we can make two configurables; one for smooth and one for non-smooth)
+** ang pangit ng view ko for the name input for leaderboards
