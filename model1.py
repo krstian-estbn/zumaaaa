@@ -86,9 +86,9 @@ class Enemy:
                     self.route_idx += 1
 
 class Regenerator(Enemy):
-    def __init__(self, h: int, *args):
+    def __init__(self, h: float, *args):
         super().__init__(*args)
-        self.h: int = h
+        self.h: float = h
         self.smooth_speed: float = 0.5
         self.acc: float = 16
 
@@ -101,7 +101,7 @@ class Regenerator(Enemy):
         if smooth: # add: configurable speed for smooth movement
             self.spawned = False
             self.acc += self.smooth_speed
-            if math.ceil((self.acc) / 16) == self.h + 1:
+            if self.acc >= self.h * 16:
                 self.acc = 0
                 self.hit_point += 1
           
@@ -573,5 +573,5 @@ class Model:
         for k, tower in enumerate(self.towers):
             tower.bullets = [b for i, b in enumerate(tower.bullets) if (k, i) not in hit_tower_bullets]
 
-        if self.lives == 0 or self.limit <= 0:
+        if self.lives <= 0 or self.limit <= 0:
             self.reset_round()
