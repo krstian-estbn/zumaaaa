@@ -6,6 +6,11 @@
             "rounds": 12
         },
         {
+            "name": "HATDOG",
+            "exp": 8,
+            "rounds": 1
+        },
+        {
             "name": "PWET",
             "exp": 3,
             "rounds": 0

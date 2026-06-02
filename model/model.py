@@ -77,13 +77,9 @@ class Model:
 
     
     def end_game(self) -> None:
-        if self.game_over:
+        if self.state in (GameState.NAME_INPUT, GameState.GAME_OVER):
             return
-
-        self.game_over = True
-        
-        if self.mode is not None:
-            save_score(self.mode, self.player_name, self.exp, self.rounds_survived)
+        self.state = GameState.NAME_INPUT
             
     def reset_round(self) -> None:
         self.rounds_survived += 1
