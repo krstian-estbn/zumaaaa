@@ -178,12 +178,14 @@ class View:
         pyxel.rect(x + 4, y + 4, width - 8, height - 8, pyxel.COLOR_DARK_BLUE)
 
 
-        pyxel.text(center_x - (4 * len("GAME OVER")) // 2, y + 14, "GAME OVER", pyxel.COLOR_RED)
+        # pyxel.text(center_x - (4 * len("GAME OVER")) // 2, y + 14, "GAME OVER", pyxel.COLOR_RED)
+        create_text("GAME OVER...".center(25), center_x, y - 5, pyxel.COLOR_CYAN, pyxel.COLOR_NAVY)
         survived = f"ROUNDS: {rounds_survived}"
-        pyxel.text(center_x - (4 * len(survived)) // 2, y + 30, survived, pyxel.COLOR_WHITE)
+        create_text(survived.center(15), center_x, y + 20, pyxel.COLOR_WHITE, pyxel.COLOR_NAVY)
+        #pyxel.text(center_x - (4 * len(survived)) // 2, y + 30, survived, pyxel.COLOR_WHITE)
 
-        create_text("  PLAY AGAIN  ", center_x, y + 46, pyxel.COLOR_LIME, pyxel.COLOR_GREEN)
-        create_text("  EXIT  ", center_x, y + 62, pyxel.COLOR_PINK, pyxel.COLOR_RED)
+        create_text("PLAY AGAIN".center(20), center_x, y + 46, pyxel.COLOR_LIME, pyxel.COLOR_GREEN)
+        create_text("EXIT".center(20), center_x, y + 62, pyxel.COLOR_PINK, pyxel.COLOR_RED)
 
     def draw_tower_placement(self, mx, my, blocked_cells):
         tx = (mx // 16) * 16

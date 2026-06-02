@@ -26,7 +26,27 @@
             "rounds": 0
         },
         {
+            "name": "TEST",
+            "exp": 3,
+            "rounds": 0
+        },
+        {
             "name": "HUH",
+            "exp": 0,
+            "rounds": 0
+        },
+        {
+            "name": "AHA",
+            "exp": 0,
+            "rounds": 0
+        },
+        {
+            "name": "BASTA",
+            "exp": 0,
+            "rounds": 0
+        },
+        {
+            "name": "TEST ULI",
             "exp": 0,
             "rounds": 0
         }

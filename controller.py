@@ -345,10 +345,10 @@ class Controller:
         
         elif self._model.state == GameState.GAME_OVER:
             if pyxel.btnp(pyxel.MOUSE_BUTTON_LEFT):
-                if self._is_clicked_text(pyxel.width // 2, pyxel.height // 2 + 1, len("  PLAY AGAIN  ")):
+                if self._is_clicked_text(pyxel.width // 2, pyxel.height // 2 + 1, 20):
                     self._model.restart_game()
 
-                elif self._is_clicked_text(pyxel.width // 2, pyxel.height // 2 + 17, len("  EXIT  ")):
+                elif self._is_clicked_text(pyxel.width // 2, pyxel.height // 2 + 17, 20):
                     pyxel.quit()
                     
 
