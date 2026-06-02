@@ -14,6 +14,7 @@ from utils import GameState, Mode, create_grid
 # 1 = right, 2 = up, 3 = down
 class Model:
     DEFAULT_SETTINGS: Dict[str, int | float] = {
+        "smooth": 1,
         "n_enemies": 5,
         "n_lives": 2,
         "enemy_speed": 2.0,
@@ -31,7 +32,10 @@ class Model:
         self.grid: list[tuple[int, int]] = create_grid(16, pyxel.height, pyxel.width)
 
         self.state: GameState = GameState.START
-        self.smooth: bool = False
+        
+        self.smooth_int: int | float = self.settings["smooth"]
+        self.smooth: bool = self.smooth_int == 1 # defaulted to be smooth
+        
         self.mode: Optional[Mode] = None
 
         self.game_over: bool = False
@@ -357,6 +361,10 @@ class Model:
             self.enemy_speed = value
             self.spawn_interval = 1 / (value * 30)
 
+        elif key == "smooth":
+            self.smooth_int = (self.smooth_int + 1) % 2
+            self.smooth = self.smooth_int == 1
+
     def load_settings(self) -> Dict[str, int | float]:
         try:
             with open("settings.json", "r") as f:
@@ -371,6 +379,7 @@ class Model:
         
     def save_settings(self) -> None:
         self.settings.update({
+            "smooth": self.smooth_int,
             "n_enemies": self.limit,
             "n_lives": self.lives,
             "enemy_speed": self.enemy_speed,

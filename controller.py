@@ -218,7 +218,7 @@ class Controller:
                 spacing = 17
                 
                 if self._is_clicked_button(start_1x, start_y + spacing * 2):
-                    self._model.smooth = not self._model.smooth
+                    self._model.set_config("smooth", 1)
                 elif self._is_clicked_button(start_1x, start_y + spacing * 3):
                     self._model.set_config("limit", self._model.limit - 1)
                     self._model.save_settings()
