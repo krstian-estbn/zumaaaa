@@ -40,6 +40,8 @@ class Model:
 
         self.game_over: bool = False
         self.exp: int = 15
+        self.total_exp: int = self.exp
+        
         self.lives: int | float = self.settings["n_lives"]
         self.limit: int | float = self.settings["n_enemies"]
         
@@ -97,7 +99,10 @@ class Model:
             self.tunnels = self.generate_tunnels()
             
             for tower in self.towers:
-                self.exp += tower.level * 5
+                bonus_exp = tower.level * 5
+                
+                self.exp += bonus_exp
+                self.total_exp += bonus_exp
                 
             self.towers = []
 
@@ -290,7 +295,10 @@ class Model:
                         if enemy.hit_point <= 1:
                             hit_enemies.add(j)
                             self.hit_enemy = True
+                            
                             self.exp += 1
+                            self.total_exp += 1
+                            
                             self.limit -= 1
                         else:
                             enemy.hit_point -= 1
@@ -314,7 +322,10 @@ class Model:
                             if enemy.hit_point <= 1:
                                 hit_enemies.add(j)
                                 self.hit_enemy = True
+                                
                                 self.exp += 1
+                                self.total_exp += 1
+                                
                                 self.limit -= 1
                             else:
                                 enemy.hit_point -= 1

@@ -167,7 +167,7 @@ class Controller:
         if pyxel.btnp(pyxel.KEY_RETURN) and self.name_input.strip():
             self._model.player_name = self.name_input.strip()
             if self._model.mode is not None:
-                save_score(self._model.mode, self._model.player_name, self._model.exp, self._model.rounds_survived)
+                save_score(self._model.mode, self._model.player_name, self._model.total_exp, self._model.rounds_survived)
             
             self._model.game_over = True
             self._model.state = GameState.GAME_OVER
