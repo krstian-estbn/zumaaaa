@@ -38,7 +38,7 @@ class Model:
         self.game_over: bool = False
         self.exp: int = 0
         self.lives: int | float = self.settings["n_lives"]
-        self.limit: int = self.settings["n_enemies"]
+        self.limit: int | float = self.settings["n_enemies"]
         
         self.enemies: List[Enemy] = []
         

@@ -1,6 +1,7 @@
 FEATURES:
 Start Screen:
 > Play
+    = Requests for Player Name (to be stored for leaderboards)
     = Campaign (Normal, Hard)
     = Endless (Normal, Hard)
 > Settings
@@ -37,6 +38,7 @@ Need to Address:
 
 Missing Features:
 - Info Screen
+- Leaderboard Screen
 - Pause Screen
 - Game Over Screen
 - One more color for Bullets, Enemies, ...

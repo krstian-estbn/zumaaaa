@@ -240,26 +240,35 @@ class Controller:
                         self._model.set_config("enemy_speed", self._model.enemy_speed - 0.1)
                     elif self._is_clicked_button(end_2x, start_y + spacing * 2):
                         self._model.set_config("enemy_speed", self._model.enemy_speed + 0.1)
+                    
                     elif self._is_clicked_button(start_2x, start_y + spacing * 3):
                         self._model.regen_h = max(5, self._model.regen_h - 1)
                         for enemy in self._model.enemies:
                             if isinstance(enemy, Regenerator):
                                 enemy.h = self._model.regen_h
+                        self._model.save_settings()
+                    
                     elif self._is_clicked_button(end_2x, start_y + spacing * 3):
                         self._model.regen_h += 1
                         for enemy in self._model.enemies:
                             if isinstance(enemy, Regenerator):
                                 enemy.h = self._model.regen_h
+                        self._model.save_settings()
+                        
                     elif self._is_clicked_button(start_2x, start_y + spacing * 4):
                         self._model.cham_freq = max(3.0, self._model.cham_freq - 0.1)
                         for enemy in self._model.enemies:
                             if isinstance(enemy, Chameleon):
                                 enemy.freq = 1 / (self._model.cham_freq * 30)
+                        self._model.save_settings()
+                        
                     elif self._is_clicked_button(end_2x, start_y + spacing * 4):
                         self._model.cham_freq += 0.1
                         for enemy in self._model.enemies:
                             if isinstance(enemy, Chameleon):
                                 enemy.freq = 1 / (self._model.cham_freq * 30)
+                        self._model.save_settings()
+                        
                     elif self._is_clicked_button(start_2x, start_y + spacing * 6):
                         self._model.set_config("lives", self._model.lives - 1)
                     elif self._is_clicked_button(end_2x, start_y + spacing * 6):
