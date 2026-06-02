@@ -1,9 +1,9 @@
 FEATURES:
 Start Screen:
 > Play
-    = Requests for Player Name (to be stored for leaderboards)
     = Campaign (Normal, Hard)
     = Endless (Normal, Hard)
+    = Requests for Player Name after game (to be stored for leaderboards)
 > Settings
     = Configurables
         - smoothness (enemy movement)
@@ -15,10 +15,9 @@ Start Screen:
         - shooter & tower speed (no. of seconds for the bullet to travel the diagonal)
         - lives (changes settings.json)
         - rounds (to add...)
-> Info
-    = to add...
 > Leaderboard
-    = to add...
+    = Campaign Mode
+    = Endless Mode
 > Exit
 
 Game Modes:
@@ -35,17 +34,18 @@ Need to Address:
 - Fix the paths to accommodate at most 2 tunnels
 - Change the logic for configurables* (fixed narin medyo)
 - Change the logic for enemy speed**
+- Should update leaderboard (not append) if same name, same mode, and higher rounds survived (exp for tie breaker)
+- Address leaderboard limit
+- Implement uv
+- Github classroom
 
 Missing Features:
 - Info Screen
-- Leaderboard Screen
 - Pause Screen
-- Game Over Screen
 - One more color for Bullets, Enemies, ...
 - Configurable no. of rounds
 - More Tower Levels + logic for upgrading + graphics
 - Increasing difficulty per round
-- Back Button
 
 
 * medyo weird kasi if babawasan mo ung speed pero bibilis sya... (i based the logic sa instructions)
