@@ -182,9 +182,27 @@ class Model:
         length: int = len(route)
         size: int = RNG.randint(2, 5)
 
-        start: int = RNG.randint(0, length - size)
-
+        valid_starts: List[int] = []
+        
+        for start in range(length - size + 1):
+            valid = True
+            
+            for i in range(start, start + size):
+                node = route[i]
+                
+                if (node["x"], node["y"]) in self.tunnel_cells:
+                    valid = False
+                    break
+            
+            if valid:
+                valid_starts.append(start)
+                
+        if not valid_starts:
+            return []
+        
+        start: int = RNG.choice(valid_starts)
         tunnel: List[RouteNode] = []
+        
         for i in range(start, start + size):
             node = route[i]
             self.tunnel_cells.add((node["x"], node["y"]))
@@ -193,8 +211,16 @@ class Model:
         return tunnel
 
     def generate_tunnels(self) -> List[List[RouteNode]]:
-        return [self.create_tunnel(r) for r in self.routes]
-
+        tunnels: List[List[RouteNode]] = []
+        
+        for route in self.routes:
+            n_tunnels = RNG.randint(1, 2)
+            
+            for _ in range(n_tunnels):
+                tunnels.append(self.create_tunnel(route))
+        
+        return tunnels
+    
     def _in_tunnel(self, x: float, y: float) -> bool:
         for tx, ty in self.tunnel_cells:
             if in_rect(x, y, tx, ty):
