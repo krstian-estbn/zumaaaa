@@ -51,7 +51,25 @@
             "rounds": 0
         }
     ],
-    "campaign_hard": [],
-    "endless_normal": [],
-    "endless_hard": []
+    "campaign_hard": [
+        {
+            "name": "TEST",
+            "exp": 3,
+            "rounds": 0
+        }
+    ],
+    "endless_normal": [
+        {
+            "name": "TEST",
+            "exp": 6,
+            "rounds": 3
+        }
+    ],
+    "endless_hard": [
+        {
+            "name": "TEST LAST NA",
+            "exp": 0,
+            "rounds": 0
+        }
+    ]
 }

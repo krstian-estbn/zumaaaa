@@ -191,7 +191,7 @@ class Controller:
                 self._model.state = GameState.GAME
             elif pyxel.btnp(pyxel.KEY_S) or (pyxel.btnp(pyxel.MOUSE_BUTTON_LEFT) and self._is_clicked_text(pyxel.width // 2, max_y + spacing, text_len)):
                 self._model.state = GameState.SETTINGS
-            elif pyxel.btnp(pyxel.KEY_I) or (pyxel.btnp(pyxel.MOUSE_BUTTON_LEFT) and self._is_clicked_text(pyxel.width // 2, max_y + spacing * 2, text_len)):
+            elif pyxel.btnp(pyxel.KEY_L) or (pyxel.btnp(pyxel.MOUSE_BUTTON_LEFT) and self._is_clicked_text(pyxel.width // 2, max_y + spacing * 2, text_len)):
                 self._model.state = GameState.LEADERBOARD
             elif pyxel.btnp(pyxel.KEY_E) or (pyxel.btnp(pyxel.MOUSE_BUTTON_LEFT) and self._is_clicked_text(pyxel.width // 2, max_y + spacing * 3, text_len)):
                 quit()
