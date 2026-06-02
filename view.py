@@ -397,7 +397,7 @@ class View:
                 rounds = player_data["rounds"]
 
                 create_text(f"{name}".ljust(20), center_1x, start_1y + spacing * 1, pyxel.COLOR_WHITE, pyxel.COLOR_BLACK)
-                create_text(f"EXP LEFT: {exp}".ljust(20), center_1x, start_1y + spacing * 2, pyxel.COLOR_LIGHT_BLUE, pyxel.COLOR_NAVY)
+                create_text(f"TOTAL EXP: {exp}".ljust(20), center_1x, start_1y + spacing * 2, pyxel.COLOR_LIGHT_BLUE, pyxel.COLOR_NAVY)
                 create_text(f"ROUNDS SURVIVED: {rounds}".ljust(20), center_1x, start_1y + spacing * 3, pyxel.COLOR_PEACH, pyxel.COLOR_BROWN)
 
                 start_1y = start_1y + spacing * 3 + 3
@@ -411,7 +411,7 @@ class View:
                 rounds = player_data["rounds"]
 
                 create_text(f"{name}".ljust(20), center_2x, start_2y + spacing * 1, pyxel.COLOR_WHITE, pyxel.COLOR_BLACK)
-                create_text(f"EXP LEFT: {exp}".ljust(20), center_2x, start_2y + spacing * 2, pyxel.COLOR_LIGHT_BLUE, pyxel.COLOR_NAVY)
+                create_text(f"TOTAL EXP: {exp}".ljust(20), center_2x, start_2y + spacing * 2, pyxel.COLOR_LIGHT_BLUE, pyxel.COLOR_NAVY)
                 create_text(f"ROUNDS SURVIVED: {rounds}".ljust(20), center_2x, start_2y + spacing * 3, pyxel.COLOR_PEACH, pyxel.COLOR_BROWN)
 
                 start_2y = start_2y + spacing * 3 + 3
