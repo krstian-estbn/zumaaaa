@@ -32,9 +32,8 @@ CHANGES/ERRORS/NEED TO MODIFY:
 Need to Address:
 - Fix enemy hit box after going out of tunnel (fixed medyo)
 - Fix the paths to accommodate at most 2 tunnels
-- Change the logic for configurables* (fixed narin medyo)
-- Change the logic for enemy speed**
 - Address leaderboard limit (need ba iallot more than 10?)
+    > kaya naman mag-allot more than 10; pero if ung limit lang natin is 10 then okay lang din... siguro state nalang sa readme 
 - Github classroom
 
 Missing Features:

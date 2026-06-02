@@ -1,5 +1,5 @@
 {
-    "smooth": 1,
+    "smooth": 0,
     "n_enemies": 5,
     "n_lives": 2,
     "enemy_speed": 0.9999999999999992,

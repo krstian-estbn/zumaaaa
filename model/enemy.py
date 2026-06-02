@@ -12,7 +12,7 @@ class Enemy:
         self.route_idx: int = 0
         self.timer: float = 0.0
         self.speed: float = speed / (2.0 * 30)
-        self.smooth_speed: float = 16 * self.speed
+        self.smooth_speed: float = 8 * self.speed
         self.spawned: bool = True
         self.hit_point: int = 1
         self.color: Color = RNG.choice(COLORS)
