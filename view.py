@@ -1,13 +1,13 @@
 import pyxel
+import math
+import json
+
 from random import Random
-from utils import Color, Orientation
+from utils import Color, Orientation, Mode
 from model.enemy import Enemy, Regenerator, Chameleon
 
-RNG = Random()
-N = 10
 BlOCK_SIZE = 13
 PADDING = 3
-ENEMY_CELLS = [(0, 0), (16, 0), (32, 0), (48, 0), (0, 16), (0, 144), (16, 144), (32, 144), (48, 144), (0, 160), (0, 176), (16, 176), (32, 176), (48, 176), (0, 192)]
 
 def create_text(text, x, y, bg_color, text_color, center=True):
     text_width = 4 * len(text)
@@ -34,10 +34,6 @@ def create_configurable(text, x1, x2, y, bg_color, text_color):
     create_button(x2, y, 32)
 
 class View:
-    def __init__(self):
-        self.timer: int = 0
-        self.enemies: list[tuple[int, ...]] = []
-
     def draw_shooter(self, shooter):
         if shooter.color == Color.YELLOW:
             pyxel.blt(pyxel.width // 2 - 8, pyxel.height // 2 - 8, 0, 16, 16, 16, 16, 0, shooter.angle)
@@ -238,22 +234,9 @@ class View:
         pyxel.rect(10, pyxel.height - 22, (4 * len(text)) + 4, 10, pyxel.COLOR_NAVY)
         pyxel.text(14, pyxel.height - 20, text, pyxel.COLOR_WHITE)
 
-    def draw_start(self, grid):
-        if self.timer == 0:
-            self.enemies = []
-            for _ in range(N):
-                valid_cells = [(x, y) for x, y in grid if not (32 <= x <= 160 and 48 <= y <= 96) and not (64 <= x <= 128 and 112 <= y <= 160)]
-                x, y = RNG.choice(valid_cells)
-                u, v = RNG.choice(ENEMY_CELLS)
-                self.enemies.append((x, y, u, v))
-
-        for x, y, u, v in self.enemies:
+    def draw_start(self, enemies):
+        for x, y, u, v in enemies:
             pyxel.blt(x, y, 0, u, v, 16, 16, 0)
-
-        self.timer += 1
-
-        if self.timer >= 60:
-            self.timer = 0
 
         TOTAL_HEIGHT = 102
         min_y = pyxel.height // 2 - 50
@@ -261,10 +244,10 @@ class View:
         
         pyxel.blt(pyxel.width // 2 - 64, min_y, 1, 0, 0, 128, 32, 0)
         pyxel.blt(pyxel.width // 2 - 64, min_y + 32 + 4, 1, 0, 96, 128, 16, 0)
-        create_text("    PLAY    ", pyxel.width // 2, max_y, pyxel.COLOR_PEACH, pyxel.COLOR_BROWN)
-        create_text("  SETTINGS  ", pyxel.width // 2, max_y + (BlOCK_SIZE + PADDING), pyxel.COLOR_YELLOW, pyxel.COLOR_ORANGE)
-        create_text("    INFO    ", pyxel.width // 2, max_y + (BlOCK_SIZE + PADDING) * 2, pyxel.COLOR_LIME, pyxel.COLOR_GREEN)
-        create_text("    EXIT    ", pyxel.width // 2, max_y + (BlOCK_SIZE + PADDING) * 3, pyxel.COLOR_PINK, pyxel.COLOR_RED)
+        create_text("PLAY".center(14), pyxel.width // 2, max_y, pyxel.COLOR_PEACH, pyxel.COLOR_BROWN)
+        create_text("SETTINGS".center(14), pyxel.width // 2, max_y + (BlOCK_SIZE + PADDING), pyxel.COLOR_YELLOW, pyxel.COLOR_ORANGE)
+        create_text(" LEADERBOARD".center(14), pyxel.width // 2, max_y + (BlOCK_SIZE + PADDING) * 2, pyxel.COLOR_LIME, pyxel.COLOR_GREEN)
+        create_text("EXIT".center(14), pyxel.width // 2, max_y + (BlOCK_SIZE + PADDING) * 3, pyxel.COLOR_PINK, pyxel.COLOR_RED)
 
         
     def draw_settings(self, check_smooth, enemies, shooter_rate, shooter_speed, tower_rate, tower_speed, regen, chameleon, enemy_speed, lives):
@@ -310,6 +293,7 @@ class View:
         create_text("  EXIT  ", pyxel.width // 2, start_y + spacing * 10, pyxel.COLOR_PINK, pyxel.COLOR_RED)
 
     def draw_modes(self):
+        create_text("EXIT", 21, 6, pyxel.COLOR_PINK, pyxel.COLOR_RED)
         min_y = pyxel.height // 2 - 55
         pyxel.blt(pyxel.width // 2 - 64 - 8, min_y, 1, 64, 32, 64, 64, 0)
         pyxel.blt(pyxel.width // 2 + 8, min_y, 1, 0, 32, 64, 64, 0)
@@ -355,3 +339,64 @@ class View:
         pyxel.text(text_x, textbox_y + 5, display_text, pyxel.COLOR_YELLOW)
 
         pyxel.text(pyxel.width // 2 - 44 // 2, inner_y + 50, "PRESS ENTER", pyxel.COLOR_LIGHT_BLUE)
+
+    def draw_leaderboard(self, state, page, split_normal, split_hard):
+        min_x = pyxel.width // 2 - 100
+        min_y = pyxel.height // 2 - 100
+        max_y = pyxel.height // 2 + 100
+        spacing = BlOCK_SIZE + PADDING
+        mode = "CAMPAIGN" if state else "ENDLESS"
+
+        pyxel.rect(min_x - 1, min_y - 1, 202, 202, pyxel.COLOR_NAVY)
+        pyxel.rect(min_x, min_y, 200, 200, pyxel.COLOR_DARK_BLUE)
+        create_text(f"LEADERBOARD: {mode}".center(25), pyxel.width // 2 - 10, min_y + 3, pyxel.COLOR_YELLOW, pyxel.COLOR_ORANGE)
+        pyxel.blt(pyxel.width // 2 + 45, min_y + 3, 0, 0, 208, 16, 16, 0)
+        
+        state_y = min_y + spacing + 5
+        start_1y = state_y + 1
+        start_2y = state_y + 1
+        start_1x = min_x + 5
+        end_1x = pyxel.width // 2 - 19
+        start_2x = end_1x + 16 + 4
+        end_2x = pyxel.width // 2 + 100 - 5 - 16
+        center_1x = pyxel.width // 2 - 47
+        center_2x = pyxel.width // 2 + 47
+
+        create_text("EXIT", 21, 6, pyxel.COLOR_PINK, pyxel.COLOR_RED)
+
+        create_text("NORMAL".center(8), center_1x, state_y, pyxel.COLOR_CYAN, pyxel.COLOR_NAVY)
+
+        if split_normal:
+            for i, player_data in enumerate(split_normal[page - 1]):
+                name = player_data["name"]
+                exp = player_data["exp"]
+                rounds = player_data["rounds"]
+
+                create_text(f"{name}".ljust(20), center_1x, start_1y + spacing * 1, pyxel.COLOR_WHITE, pyxel.COLOR_BLACK)
+                create_text(f"EXP LEFT: {exp}".ljust(20), center_1x, start_1y + spacing * 2, pyxel.COLOR_LIGHT_BLUE, pyxel.COLOR_NAVY)
+                create_text(f"ROUNDS SURVIVED: {rounds}".ljust(20), center_1x, start_1y + spacing * 3, pyxel.COLOR_PEACH, pyxel.COLOR_BROWN)
+
+                start_1y = start_1y + spacing * 3 + 3
+
+        create_text("HARD".center(8), center_2x, state_y, pyxel.COLOR_CYAN, pyxel.COLOR_NAVY)
+
+        if split_hard:
+            for i, player_data in enumerate(split_hard[page - 1]):
+                name = player_data["name"]
+                exp = player_data["exp"]
+                rounds = player_data["rounds"]
+
+                create_text(f"{name}".ljust(20), center_2x, start_2y + spacing * 1, pyxel.COLOR_WHITE, pyxel.COLOR_BLACK)
+                create_text(f"EXP LEFT: {exp}".ljust(20), center_2x, start_2y + spacing * 2, pyxel.COLOR_LIGHT_BLUE, pyxel.COLOR_NAVY)
+                create_text(f"ROUNDS SURVIVED: {rounds}".ljust(20), center_2x, start_2y + spacing * 3, pyxel.COLOR_PEACH, pyxel.COLOR_BROWN)
+
+                start_2y = start_2y + spacing * 3 + 3
+
+        pyxel.blt(pyxel.width // 2 - 16, max_y - 13, 0, 16, 208, 16, 16, 0)
+        pyxel.blt(pyxel.width // 2, max_y - 13, 0, 32, 208, 16, 16, 0)
+
+        
+
+
+            
+

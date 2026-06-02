@@ -16,6 +16,7 @@ class Orientation(Enum):
 class GameState(Enum):
     START = auto()
     GAME = auto()
+    LEADERBOARD = auto()
     SETTINGS = auto()
     NAME_INPUT = auto()
     GAME_OVER = auto()

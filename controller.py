@@ -2,12 +2,16 @@ from model.model import Model
 from model.leaderboard import save_score
 from model.enemy import Regenerator, Chameleon
 from model.tower import Tower
+from model.constants import RNG
 from view import View
 from utils import Orientation, GameState, Mode
 
 import pyxel
 import math
 import json
+
+N = 10
+ENEMY_CELLS = [(0, 0), (16, 0), (32, 0), (48, 0), (0, 16), (0, 144), (16, 144), (32, 144), (48, 144), (0, 160), (0, 176), (16, 176), (32, 176), (48, 176), (0, 192)]
 
 class Controller:
     def __init__(self, model: Model, view: View):
@@ -23,6 +27,14 @@ class Controller:
         self.tx: int = 0
         self.ty: int = 0
         self.previous_state: GameState = None
+        self.enemy_start: tuple[int, ...] = []
+
+        self.leaderboard_state: str = 1
+        self.leaderboard_page: int = 1
+        self.leaderboard_max_page: int = 0
+        self.leaderboard_normal: list[list[dict[str, str | int]]] = []
+        self.leaderboard_hard: list[list[dict[str, str | int]]] = []
+        self.update_leaderboard()
 
     def start_game(self):
         pyxel.load("zuma.pyxres")
@@ -98,6 +110,25 @@ class Controller:
             y <= pyxel.mouse_y <= y + text_height
         )
 
+    def update_leaderboard(self):
+        try:
+            with open("leaderboard.json", "r") as f:
+                data: Dict[str, int | float] = json.load(f)
+        except FileNotFoundError:
+            data: Dict[str, int | float] = {}
+
+        if self.leaderboard_state:
+            data_normal = data["campaign_normal"]
+            data_hard = data["campaign_hard"]
+        else:
+            data_normal = data["endless_normal"]
+            data_hard = data["endless_hard"]
+
+        self.leaderboard_normal = [data_normal[i:i+3] for i in range(0, len(data_normal), 3)]
+        self.leaderboard_hard = [data_hard[i:i+3] for i in range(0, len(data_normal), 3)]
+
+        self.leaderboard_max_page = max(math.ceil(len(self.leaderboard_normal)), math.ceil(len(self.leaderboard_hard)))
+
     def click_tower_info(self):
         mx, my = pyxel.mouse_x, pyxel.mouse_y
         if self._is_clicked_button(110, pyxel.height - 30):
@@ -143,18 +174,43 @@ class Controller:
             
     def update(self):
         if self._model.state == GameState.START:
+            self.previous_state = GameState.START
+
+            if pyxel.frame_count % 60 == 0:
+                self.enemy_start = []
+                for _ in range(N):
+                    valid_cells = [(x, y) for x, y in self._model.grid if not (32 <= x <= 160 and 48 <= y <= 96) and not (64 <= x <= 128 and 112 <= y <= 160)]
+                    x, y = RNG.choice(valid_cells)
+                    u, v = RNG.choice(ENEMY_CELLS)
+                    self.enemy_start.append((x, y, u, v))
+
             max_y = pyxel.height // 2 - 51 + 60
             spacing = 16
-            text_len = 12
+            text_len = 14
             if pyxel.btnp(pyxel.KEY_P) or (pyxel.btnp(pyxel.MOUSE_BUTTON_LEFT) and self._is_clicked_text(pyxel.width // 2, max_y, text_len)):
                 self._model.state = GameState.GAME
             elif pyxel.btnp(pyxel.KEY_S) or (pyxel.btnp(pyxel.MOUSE_BUTTON_LEFT) and self._is_clicked_text(pyxel.width // 2, max_y + spacing, text_len)):
-                self.previous_state = GameState.START
                 self._model.state = GameState.SETTINGS
             elif pyxel.btnp(pyxel.KEY_I) or (pyxel.btnp(pyxel.MOUSE_BUTTON_LEFT) and self._is_clicked_text(pyxel.width // 2, max_y + spacing * 2, text_len)):
-                self._model.state = GameState.INFO
+                self._model.state = GameState.LEADERBOARD
             elif pyxel.btnp(pyxel.KEY_E) or (pyxel.btnp(pyxel.MOUSE_BUTTON_LEFT) and self._is_clicked_text(pyxel.width // 2, max_y + spacing * 3, text_len)):
                 quit()
+
+        elif self._model.state == GameState.LEADERBOARD:
+            if pyxel.btnp(pyxel.MOUSE_BUTTON_LEFT):
+                min_y = pyxel.height // 2 - 100
+                max_y = pyxel.height // 2 + 100
+                if self._is_clicked_button(pyxel.width // 2 + 45, min_y + 4, height=14):
+                    self.leaderboard_state = (self.leaderboard_state + 1) % 2
+                    self.leaderboard_page = 1
+                    self.update_leaderboard()
+                elif self._is_clicked_button(pyxel.width // 2, max_y - 12, height=14):
+                    self.leaderboard_page = min(self.leaderboard_page + 1, self.leaderboard_max_page)
+                elif self._is_clicked_button(pyxel.width // 2 - 16, max_y - 12, height=14):
+                    self.leaderboard_page = max(1, self.leaderboard_page - 1)
+                elif self._is_clicked_text(21, 6, 4):
+                    self._model.state = self.previous_state
+
         
         elif self._model.state == GameState.GAME:
             if self._model.start_round:
@@ -163,7 +219,9 @@ class Controller:
                     spacing = 17
                     start_1x = pyxel.width // 2 - 8 - 32
                     start_2x = pyxel.width // 2 + 8 + 32
-                    if self._is_clicked_text(start_1x, start_y, 8):
+                    if self._is_clicked_text(21, 6, 4):
+                        self._model.state = self.previous_state
+                    elif self._is_clicked_text(start_1x, start_y, 8):
                         self._model.mode = Mode.CAMPAIGN_NORMAL
                     elif self._is_clicked_text(start_1x, start_y + spacing, 8):
                         self._model.mode = Mode.CAMPAIGN_HARD
@@ -305,7 +363,7 @@ class Controller:
         self._view.draw_grid()
         
         if self._model.state == GameState.START:
-            self._view.draw_start(self._model.grid)
+            self._view.draw_start(self.enemy_start)
         
         elif self._model.state == GameState.GAME:
             if self._model.start_round:
@@ -340,6 +398,9 @@ class Controller:
         
         elif self._model.state == GameState.SETTINGS:
             self._view.draw_settings(self._model.smooth, self._model.limit, self._model.shooter_rate, self._model.shooter_speed, self._model.tower_rate, self._model.tower_speed, self._model.regen_h, self._model.cham_freq, self._model.enemy_speed, self._model.lives)
+
+        elif self._model.state == GameState.LEADERBOARD:
+            self._view.draw_leaderboard(self.leaderboard_state, self.leaderboard_page, self.leaderboard_normal, self.leaderboard_hard)
         
         elif self._model.state == GameState.NAME_INPUT:
             self._view.draw_name_input(self.name_input)
