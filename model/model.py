@@ -8,7 +8,6 @@ from .tower import Tower
 from .shooter import Shooter
 from .enemy import Enemy, Chameleon, Regenerator
 from .helper import in_rect
-from .leaderboard import save_score
 from utils import GameState, Mode, create_grid
 
 

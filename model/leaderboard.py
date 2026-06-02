@@ -1,6 +1,6 @@
 import json
 from pathlib import Path
-from typing import List, Dict, TypedDict, Optional
+from typing import List, Dict, TypedDict, cast
 
 from utils import Mode
 
@@ -11,15 +11,15 @@ class LeaderboardEntry(TypedDict):
     exp: int
     rounds: int
 
-def load_leaderboard() -> Dict[str, List[Optional[LeaderboardEntry]]]:
+def load_leaderboard() -> Dict[str, List[LeaderboardEntry]]:
     path = Path(LEADERBOARD)
     
-    default: Dict[str, List[Optional[LeaderboardEntry]]] = {
-            "campaign_normal": [],
-            "campaign_hard": [],
-            "endless_normal": [],
-            "endless_hard": []
-        }
+    default: Dict[str, List[LeaderboardEntry]] = {
+        "campaign_normal": [],
+        "campaign_hard": [],
+        "endless_normal": [],
+        "endless_hard": []
+    }
     
     if not path.exists():
         return default
@@ -28,10 +28,11 @@ def load_leaderboard() -> Dict[str, List[Optional[LeaderboardEntry]]]:
         return default
     
     with open(path, "r", encoding="utf-8") as file:
-        return json.load(file)
+        data = json.load(file)
+        return cast(Dict[str, List[LeaderboardEntry]], data)
     
 def save_score(mode: Mode, name: str, exp: int, rounds: int) -> None:
-    leaderboard: Dict[str, List[Optional[LeaderboardEntry]]] = load_leaderboard()
+    leaderboard: Dict[str, List[LeaderboardEntry]] = load_leaderboard()
     mode_key = mode.name.lower()
     
     leaderboard[mode_key].append({
@@ -44,6 +45,7 @@ def save_score(mode: Mode, name: str, exp: int, rounds: int) -> None:
         key=lambda x: (x["rounds"], x["exp"]),
         reverse=True        
         )
+    
     leaderboard[mode_key] = leaderboard[mode_key][:10] # keep 10 lang muna
     
     with open(LEADERBOARD, "w", encoding="utf-8") as file:
