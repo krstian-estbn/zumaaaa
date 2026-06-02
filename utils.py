@@ -6,6 +6,7 @@ class Color(Enum):
     BLUE = auto()
     PINK = auto()
     WHITE = auto()
+    BROWN = auto()
 
 class Orientation(Enum):
     UP = auto()

@@ -43,6 +43,8 @@ class View:
             pyxel.blt(pyxel.width // 2 - 8, pyxel.height // 2 - 8, 0, 48, 16, 16, 16, 0, shooter.angle)
         elif shooter.color == Color.PINK:
             pyxel.blt(pyxel.width // 2 - 8, pyxel.height // 2 - 8, 0, 0, 32, 16, 16, 0, shooter.angle)
+        elif shooter.color == Color.BROWN:
+            pyxel.blt(pyxel.width // 2 - 8, pyxel.height // 2 - 8, 0, 64, 32, 16, 16, 0, shooter.angle)
         else:
             pyxel.blt(pyxel.width // 2 - 8, pyxel.height // 2 - 8, 0, 16, 32, 16, 16, 0, shooter.angle)
             
@@ -59,6 +61,8 @@ class View:
                         pyxel.blt(enemy.x, enemy.y, 0, 32, 144, 16, 16, 0)
                     elif enemy.color == Color.PINK:
                         pyxel.blt(enemy.x, enemy.y, 0, 48, 144, 16, 16, 0)
+                    elif enemy.color == Color.BROWN:
+                        pyxel.blt(enemy.x, enemy.y, 0, 16, 160, 16, 16, 0)
                     else:
                         pyxel.blt(enemy.x, enemy.y, 0, 0, 160, 16, 16, 0)
                 elif isinstance(enemy, Chameleon):
@@ -70,6 +74,8 @@ class View:
                         pyxel.blt(enemy.x, enemy.y, 0, 32, 176, 16, 16, 0)
                     elif enemy.color == Color.PINK:
                         pyxel.blt(enemy.x, enemy.y, 0, 48, 176, 16, 16, 0)
+                    elif enemy.color == Color.BROWN:
+                        pyxel.blt(enemy.x, enemy.y, 0, 16, 192, 16, 16, 0)
                     else:
                         pyxel.blt(enemy.x, enemy.y, 0, 0, 192, 16, 16, 0)
                 else:
@@ -81,6 +87,8 @@ class View:
                         pyxel.blt(enemy.x, enemy.y, 0, 32, 0, 16, 16, 0)
                     elif enemy.color == Color.PINK:
                         pyxel.blt(enemy.x, enemy.y, 0, 48, 0, 16, 16, 0)
+                    elif enemy.color == Color.BROWN:
+                        pyxel.blt(enemy.x, enemy.y, 0, 64, 16, 16, 16, 0)
                     else:
                         pyxel.blt(enemy.x, enemy.y, 0, 0, 16, 16, 16, 0)
 
@@ -95,6 +103,8 @@ class View:
                 pyxel.blt(bullet.x, bullet.y, 0, 32, 40, 8, 8, 0)
             elif bullet.color == Color.PINK:
                 pyxel.blt(bullet.x, bullet.y, 0, 40, 40, 8, 8, 0)
+            elif bullet.color == Color.BROWN:
+                pyxel.blt(bullet.x, bullet.y, 0, 56, 32, 8, 8, 0)
             else:
                 pyxel.blt(bullet.x, bullet.y, 0, 48, 32, 8, 8, 0)
 
@@ -113,6 +123,9 @@ class View:
                 elif bullet.color == Color.PINK:
                     pink = {Orientation.UP: (32, 96), Orientation.DOWN: (40, 96), Orientation.RIGHT: (32, 104), Orientation.LEFT: (40, 104)}
                     pyxel.blt(bullet.x, bullet.y, 0, *pink[bullet.orientation], 8, 8, 0)
+                elif bullet.color == Color.BROWN:
+                    brown = {Orientation.UP: (64, 80), Orientation.DOWN: (72, 80), Orientation.RIGHT: (64, 88), Orientation.LEFT: (72, 88)}
+                    pyxel.blt(bullet.x, bullet.y, 0, *brown[bullet.orientation], 8, 8, 0)
                 else:
                     white = {Orientation.UP: (48, 96), Orientation.DOWN: (56, 96), Orientation.RIGHT: (48, 104), Orientation.LEFT: (56, 104)}
                     pyxel.blt(bullet.x, bullet.y, 0, *white[bullet.orientation], 8, 8, 0)
@@ -159,7 +172,7 @@ class View:
         pyxel.text(pyxel.width - 10 - (4 * len(f"LIVES: {lives}")), 10, f"LIVES: {lives}", pyxel.COLOR_WHITE)
 
     def draw_next_color(self, next_color):
-        colors = {Color.YELLOW: pyxel.COLOR_YELLOW, Color.GREEN: pyxel.COLOR_GREEN, Color.BLUE: pyxel.COLOR_LIGHT_BLUE, Color.PINK: pyxel.COLOR_PINK, Color.WHITE: pyxel.COLOR_WHITE}
+        colors = {Color.YELLOW: pyxel.COLOR_YELLOW, Color.GREEN: pyxel.COLOR_GREEN, Color.BLUE: pyxel.COLOR_DARK_BLUE, Color.PINK: pyxel.COLOR_RED, Color.WHITE: pyxel.COLOR_WHITE, Color.BROWN: pyxel.COLOR_BROWN}
         pyxel.text(pyxel.width - 10 - 6 - 4 * len("NEXT COLOR: "), pyxel.height - 10 - 5, "NEXT COLOR: ", pyxel.COLOR_WHITE)
         pyxel.circb(pyxel.width - 10 - 3, pyxel.height - 10 - 3, 3, pyxel.COLOR_NAVY)
         pyxel.circ(pyxel.width - 10 - 3, pyxel.height - 10 - 3, 2, colors[next_color])

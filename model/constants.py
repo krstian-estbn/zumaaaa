@@ -11,6 +11,7 @@ COLORS: List[Color] = [
     Color.BLUE,
     Color.WHITE,
     Color.GREEN,
+    Color.BROWN
 ]
 
 Vec2 = Tuple[int, int]

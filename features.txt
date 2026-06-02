@@ -39,7 +39,6 @@ Need to Address:
 Missing Features:
 - Info Screen
 - Pause Screen
-- One more color for Bullets, Enemies, ...
 - Configurable no. of rounds
 - More Tower Levels + logic for upgrading + graphics
 - Increasing difficulty per round
