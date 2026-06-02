@@ -3,6 +3,7 @@ import math
 import json
 
 from random import Random
+from typing import Dict
 from utils import Color, Orientation, Mode
 from model.enemy import Enemy, Regenerator, Chameleon
 
@@ -233,11 +234,19 @@ class View:
         pyxel.text(10, pyxel.height - 20, f"PLACE TOWER {yn}? {inp}_", pyxel.COLOR_WHITE)
 
     def draw_towers(self, towers):
+        tower_map: Dict[int, tuple[int, int]] = {
+            1: (32, 80),
+            2: (32, 112),
+            3: (64, 48)
+        }
+        
         for tower in towers:
-            if tower.level == 1:
-                pyxel.blt(tower.x, tower.y, 0, 32, 80, 16, 16, 0)
-            elif tower.level == 2:
-                pyxel.blt(tower.x, tower.y, 0, 32, 112, 16, 16, 0)
+            level: int = tower.level
+            (tx, ty) = tower_map[level]
+
+            pyxel.blt(tower.x, tower.y, 0, tx, ty, 16, 16, 0)
+
+            
 
     def draw_orientation(self):
         text = "Choose orientation [W/A/S/D]."
