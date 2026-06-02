@@ -202,13 +202,14 @@ class Model:
         return False
 
     def _enemy_in_tunnel(self, enemy: Enemy) -> bool:
+        
+        cx = enemy.x + enemy.r
+        cy = enemy.y + enemy.r
+
         for tx, ty in self.tunnel_cells:
-            if in_rect(enemy.x, enemy.y, tx, ty):
+            if in_rect(cx, cy, tx, ty):
                 return True
-
-            if in_rect(enemy.x + enemy.r, enemy.y + enemy.r, tx, ty):
-                return True
-
+            
         return False
     
     # 1 = normal, 2 = regenerator, 3 = chameleon; 1/2 chance for normal, 1/4 chance for special
