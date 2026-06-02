@@ -34,9 +34,7 @@ Need to Address:
 - Fix the paths to accommodate at most 2 tunnels
 - Change the logic for configurables* (fixed narin medyo)
 - Change the logic for enemy speed**
-- Should update leaderboard (not append) if same name, same mode, and higher rounds survived (exp for tie breaker)
-- Address leaderboard limit
-- Implement uv
+- Address leaderboard limit (need ba iallot more than 10?)
 - Github classroom
 
 Missing Features:
