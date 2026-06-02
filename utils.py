@@ -21,6 +21,7 @@ class GameState(Enum):
     SETTINGS = auto()
     NAME_INPUT = auto()
     GAME_OVER = auto()
+    PAUSE = auto()
 
 class Mode(Enum):
     CAMPAIGN_NORMAL = auto()

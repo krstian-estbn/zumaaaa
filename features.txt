@@ -20,6 +20,11 @@ Start Screen:
     = Endless Mode
 > Exit
 
+Pause Screen: [press P]
+> Restart (restarts the game)
+> Exit (to main menu)
+> Settings
+
 Game Modes:
 > Campaign Mode
     = Normal Difficulty: fixed enemy path 
@@ -35,8 +40,8 @@ Need to Address:
 - Github classroom
 
 Missing Features:
-- Info Screen
-- Pause Screen
+- Info Screen* (optional)
+- Add sound effects for upgrading towers
 - Configurable no. of rounds
 - More Tower Levels + logic for upgrading + graphics
 - Increasing difficulty per round

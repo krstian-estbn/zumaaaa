@@ -420,6 +420,8 @@ class View:
         pyxel.blt(pyxel.width // 2, max_y - 13, 0, 32, 208, 16, 16, 0)
 
         
+    def draw_pause(self):
+        pyxel.blt(pyxel.width // 2 - 144 // 2, pyxel.height // 2 - 80 // 2, 1, 0, 112, 144, 80, 0)
 
 
             

@@ -247,9 +247,9 @@ class Controller:
                 elif pyxel.btnp(pyxel.MOUSE_BUTTON_LEFT):
                     self.click_tower_info()
             else:
-                if pyxel.btnp(pyxel.KEY_S):
+                if pyxel.btnp(pyxel.KEY_P):
                     self.previous_state = GameState.GAME
-                    self._model.state = GameState.SETTINGS
+                    self._model.state = GameState.PAUSE
                 else:
                     angle = math.degrees(math.atan2(
                         pyxel.mouse_y - pyxel.height // 2,
@@ -266,6 +266,33 @@ class Controller:
                                 break
 
                     self._model.update()
+
+        elif self._model.state == GameState.PAUSE:
+            if pyxel.btnp(pyxel.MOUSE_BUTTON_LEFT):
+                start_y = pyxel.height // 2 - 80 // 2
+                start_x = pyxel.width // 2 - 144 // 2
+                button1_x = start_x + 40
+                button2_x = button1_x + 16 + 8
+                button3_x = button2_x + 16 + 8
+                button_y = start_y + 32 - 3
+                resume_y = button_y + 16 + 5
+                resume_x = start_x + 32 + 3
+                resume_height = 17
+                resume_width = 48 + 16 + 10
+
+                if self._is_clicked_button(button1_x, button_y):
+                    mode = self._model.mode
+                    self._model.restart_game()
+                    self._model.state = GameState.GAME
+                    self._model.mode = mode
+                elif self._is_clicked_button(button2_x, button_y):
+                    self._model.restart_game()
+                elif self._is_clicked_button(button3_x, button_y):
+                    self.previous_state = GameState.GAME
+                    self._model.state = GameState.SETTINGS
+                elif self._is_clicked_button(resume_x, resume_y, resume_width, resume_height):
+                    self._model.state = self.previous_state
+
         elif self._model.state == GameState.SETTINGS:
             if pyxel.btnp(pyxel.MOUSE_BUTTON_LEFT):
                 start_y = pyxel.height // 2 - 90 - 3
@@ -398,6 +425,9 @@ class Controller:
         
         elif self._model.state == GameState.SETTINGS:
             self._view.draw_settings(self._model.smooth, self._model.limit, self._model.shooter_rate, self._model.shooter_speed, self._model.tower_rate, self._model.tower_speed, self._model.regen_h, self._model.cham_freq, self._model.enemy_speed, self._model.lives)
+
+        elif self._model.state == GameState.PAUSE:
+            self._view.draw_pause()
 
         elif self._model.state == GameState.LEADERBOARD:
             self._view.draw_leaderboard(self.leaderboard_state, self.leaderboard_page, self.leaderboard_normal, self.leaderboard_hard)
