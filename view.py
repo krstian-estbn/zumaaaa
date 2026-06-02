@@ -168,8 +168,26 @@ class View:
         pyxel.circb(pyxel.width - 10 - 3, pyxel.height - 10 - 3, 3, pyxel.COLOR_NAVY)
         pyxel.circ(pyxel.width - 10 - 3, pyxel.height - 10 - 3, 2, colors[next_color])
 
-    def draw_game_over(self):
-        pyxel.text(pyxel.width // 2 - (4 * len("GAME OVER")) // 2, pyxel.height // 2, "GAME OVER", pyxel.COLOR_WHITE)
+    def draw_game_over(self, rounds_survived: int):
+        center_x = pyxel.width // 2
+        center_y = pyxel.height // 2
+        width = 140
+        height = 90
+        x = center_x - width // 2
+        y = center_y - height // 2
+
+        
+        pyxel.rect(x + 3, y + 3, width, height, pyxel.COLOR_BLACK)       
+        pyxel.rect(x, y, width, height, pyxel.COLOR_NAVY)
+        pyxel.rect(x + 4, y + 4, width - 8, height - 8, pyxel.COLOR_DARK_BLUE)
+
+
+        pyxel.text(center_x - (4 * len("GAME OVER")) // 2, y + 14, "GAME OVER", pyxel.COLOR_RED)
+        survived = f"ROUNDS: {rounds_survived}"
+        pyxel.text(center_x - (4 * len(survived)) // 2, y + 30, survived, pyxel.COLOR_WHITE)
+
+        create_text("  PLAY AGAIN  ", center_x, y + 46, pyxel.COLOR_LIME, pyxel.COLOR_GREEN)
+        create_text("  EXIT  ", center_x, y + 62, pyxel.COLOR_PINK, pyxel.COLOR_RED)
 
     def draw_tower_placement(self, mx, my, blocked_cells):
         tx = (mx // 16) * 16

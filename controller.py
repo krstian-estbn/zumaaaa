@@ -284,6 +284,15 @@ class Controller:
         
         elif self._model.state == GameState.NAME_INPUT:
             self.take_name_input()
+        
+        elif self._model.state == GameState.GAME_OVER:
+            if pyxel.btnp(pyxel.MOUSE_BUTTON_LEFT):
+                if self._is_clicked_text(pyxel.width // 2, pyxel.height // 2 + 1, len("  PLAY AGAIN  ")):
+                    self._model.restart_game()
+
+                elif self._is_clicked_text(pyxel.width // 2, pyxel.height // 2 + 17, len("  EXIT  ")):
+                    pyxel.quit()
+                    
 
 
 
@@ -336,4 +345,4 @@ class Controller:
             self._view.draw_name_input(self.name_input)
         
         elif self._model.state == GameState.GAME_OVER:
-            self._view.draw_game_over()
+            self._view.draw_game_over(self._model.rounds_survived)

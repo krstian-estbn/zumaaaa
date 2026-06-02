@@ -79,7 +79,10 @@ class Model:
         if self.state in (GameState.NAME_INPUT, GameState.GAME_OVER):
             return
         self.state = GameState.NAME_INPUT
-            
+    
+    def restart_game(self) -> None:
+        self.__init__() # for play again
+
     def reset_round(self) -> None:
         self.rounds_survived += 1
         
