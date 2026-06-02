@@ -17,11 +17,11 @@ class Model:
         "smooth": 1,
         "n_enemies": 5,
         "n_lives": 2,
-        "enemy_speed": 2.0,
-        "shooter_rate": 0.9,
-        "shooter_speed": 5.0,
-        "tower_rate": 0.5,
-        "tower_speed": 5.0,
+        "enemy_speed": 1.0,
+        "shooter_rate": 1.0,
+        "shooter_speed": 1.0,
+        "tower_rate": 1.0,
+        "tower_speed": 1.0,
         "regen_h": 5.0,
         "cham_freq": 3.0
     }
@@ -39,7 +39,7 @@ class Model:
         self.mode: Optional[Mode] = None
 
         self.game_over: bool = False
-        self.exp: int = 0
+        self.exp: int = 15
         self.lives: int | float = self.settings["n_lives"]
         self.limit: int | float = self.settings["n_enemies"]
         
@@ -58,7 +58,7 @@ class Model:
         self.tower_rate: float = self.settings["tower_rate"]
         self.tower_speed: float = self.settings["tower_speed"]
         
-        self.spawn_interval: float = 1 / (self.enemy_speed * 30)
+        self.spawn_interval: float = self.enemy_speed / (2.0 * 30)
         self.timer: float = 0
         
         self.blocked_cells: Set[Vec2] = {(pyxel.width // 2 - 8, pyxel.height // 2 - 8)}
@@ -345,11 +345,11 @@ class Model:
 
         elif key == "shooter_rate":
             self.shooter_rate = value
-            self.shooter.rate = value / 30
+            self.shooter.rate = value * (0.9 / 30)
 
         elif key == "shooter_speed":
             self.shooter_speed = value
-            self.shooter.speed = pyxel.height / (value * 30)
+            self.shooter.speed = (value * pyxel.height) / (5.0 * 30)
 
         elif key == "tower_rate":
             self.tower_rate = value
@@ -359,7 +359,7 @@ class Model:
 
         elif key == "enemy_speed":
             self.enemy_speed = value
-            self.spawn_interval = 1 / (value * 30)
+            self.spawn_interval = value / (2.0 * 30)
 
         elif key == "smooth":
             self.smooth_int = (self.smooth_int + 1) % 2

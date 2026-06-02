@@ -16,7 +16,7 @@ class Shooter:
         self.bullets: List[Bullet] = []
         self.timer: float = 0
         self.rate: float = 0.9 / 30
-        self.speed: float = pyxel.height / (5 * 30)
+        self.speed: float = pyxel.height / (5.0 * 30)
 
     def update(self) -> None:
         self.timer += self.rate

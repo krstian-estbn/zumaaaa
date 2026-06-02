@@ -11,7 +11,8 @@ class Enemy:
         self.route: int = route
         self.route_idx: int = 0
         self.timer: float = 0.0
-        self.speed: float = 1 / (speed * 30)
+        self.speed: float = speed / (2.0 * 30)
+        self.smooth_speed: float = 16 * self.speed
         self.spawned: bool = True
         self.hit_point: int = 1
         self.color: Color = RNG.choice(COLORS)
@@ -25,17 +26,17 @@ class Enemy:
         if smooth: # add: configurable speed for smooth movement
             self.spawned = False
             if direction == 1:
-                self.x += .5
+                self.x += self.smooth_speed
                 if self.x >= node["x"]:
                     self.route_idx += 1
 
             elif direction == 2:
-                self.y -= .5
+                self.y -= self.smooth_speed
                 if self.y <= node["y"]:
                     self.route_idx += 1
 
             else:
-                self.y += .5
+                self.y += self.smooth_speed
                 if self.y >= node["y"]:
                     self.route_idx += 1
 
@@ -58,8 +59,7 @@ class Enemy:
 class Regenerator(Enemy):
     def __init__(self, h: float, x: int, y: int, r: int, route: int, speed: float):
         super().__init__(x, y, r, route, speed)
-        self.h: float = h
-        self.smooth_speed: float = 0.5
+        self.h: float = h   
         self.acc: float = 16    
 
     def move(self, route: List[RouteNode], smooth: bool) -> None:
@@ -130,17 +130,17 @@ class Chameleon(Enemy):
         if smooth: # add: configurable speed for smooth movement
             self.spawned = False
             if direction == 1:
-                self.x += .5
+                self.x += self.smooth_speed
                 if self.x >= node["x"]:
                     self.route_idx += 1
 
             elif direction == 2:
-                self.y -= .5
+                self.y -= self.smooth_speed
                 if self.y <= node["y"]:
                     self.route_idx += 1
 
             else:
-                self.y += .5
+                self.y += self.smooth_speed
                 if self.y >= node["y"]:
                     self.route_idx += 1
 

@@ -2,11 +2,11 @@
     "smooth": 1,
     "n_enemies": 5,
     "n_lives": 2,
-    "enemy_speed": 2.0,
-    "shooter_rate": 0.9,
-    "shooter_speed": 5.0,
-    "tower_rate": 0.5,
-    "tower_speed": 5.0,
+    "enemy_speed": 0.9999999999999992,
+    "shooter_rate": 1.0,
+    "shooter_speed": 1.0000000000000009,
+    "tower_rate": 0.9999999999999999,
+    "tower_speed": 1.0000000000000009,
     "regen_h": 5.0,
     "cham_freq": 3.0
 }

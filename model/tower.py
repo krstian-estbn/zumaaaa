@@ -14,8 +14,8 @@ class Tower:
         self.show_info: bool = False
         self.level: int = 1
         self.timer: float = 0
-        self.rate: float = rate / 30
-        self.speed: float = pyxel.height / (speed * 30)
+        self.rate: float = rate * (0.5 / 30)
+        self.speed: float = speed * pyxel.height / (5.0 * 30)
 
     def shoot_bullets(self) -> None:
         self.timer += self.rate
