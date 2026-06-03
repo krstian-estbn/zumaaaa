@@ -47,8 +47,6 @@ class TowerBullet:
         self.range = (t_range - 16) // 2
     
     def adjust_position(self, bullets: List[TowerBullet]) -> None:
-        self.range -= self.speed
-
         if self.orientation == Orientation.UP:
             self.y -= self.speed
         elif self.orientation == Orientation.DOWN:
@@ -60,6 +58,8 @@ class TowerBullet:
 
         if self.range <= 0:
             bullets.remove(self)
+
+        self.range -= self.speed
     
     def collides(self, ax: int, ay: int, ar: int,
                  bx: int, by: int, br: int) -> bool:
