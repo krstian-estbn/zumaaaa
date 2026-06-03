@@ -184,6 +184,13 @@ class Controller:
                     u, v = RNG.choice(ENEMY_CELLS)
                     self.enemy_start.append((x, y, u, v))
 
+            if pyxel.btnp(pyxel.MOUSE_BUTTON_LEFT):
+                for enemy in self.enemy_start:
+                    x, y, _, _ = enemy
+                    if self._is_clicked_button(x, y):
+                        self.enemy_start.remove(enemy)
+                        pyxel.playm(0, 0, loop=False)
+
             max_y = pyxel.height // 2 - 51 + 60
             spacing = 16
             text_len = 14
