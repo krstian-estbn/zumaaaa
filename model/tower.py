@@ -1,3 +1,4 @@
+from __future__ import annotations
 from typing import List
 import pyxel
 
@@ -13,7 +14,7 @@ class Tower:
         self.bullets: List[TowerBullet] = []
         self.show_info: bool = False
         self.level: int = 1
-        self.timer: float = 0
+        self.timer: float = 1
         self.rate: float = rate * (0.5 / 30)
         self.speed: float = speed * pyxel.height / (5.0 * 30)
         self.range: int = 48
@@ -22,10 +23,10 @@ class Tower:
         self.timer += self.rate
 
     def shoot_bullets(self) -> None:
-        if self.timer >= 1 or not self.bullets:
+        if self.timer >= 1:
             self.timer = 0
             self.bullets.append(
-                TowerBullet(self.x + 4, self.y + 4, 4, self.orientation, self.speed))
+                TowerBullet(self.x + 4, self.y + 4, 4, self.orientation, self.speed, self.range))
 
     def edit_orientation(self, orientation: Orientation) -> None:
         self.orientation = orientation
@@ -36,15 +37,18 @@ class Tower:
 
 
 class TowerBullet:
-    def __init__(self, x: int, y: int, r: int, orientation: Orientation, speed: float):
+    def __init__(self, x: int, y: int, r: int, orientation: Orientation, speed: float, t_range: int):
         self.x: float = float(x)
         self.y: float = float(y)
         self.r: int = r
         self.speed: float = speed
         self.color: Color = RNG.choice(COLORS)
         self.orientation: Orientation = orientation
+        self.range = (t_range - 16) // 2
     
-    def adjust_position(self) -> None:
+    def adjust_position(self, bullets: List[TowerBullet]) -> None:
+        self.range -= self.speed
+
         if self.orientation == Orientation.UP:
             self.y -= self.speed
         elif self.orientation == Orientation.DOWN:
@@ -53,6 +57,9 @@ class TowerBullet:
             self.x += self.speed
         else:
             self.x -= self.speed
+
+        if self.range <= 0:
+            bullets.remove(self)
     
     def collides(self, ax: int, ay: int, ar: int,
                  bx: int, by: int, br: int) -> bool:

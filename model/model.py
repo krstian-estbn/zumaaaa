@@ -347,7 +347,7 @@ class Model:
         # tower bullets
         for k, tower in enumerate(self.towers):
             for i, bullet in enumerate(tower.bullets):
-                bullet.adjust_position()
+                bullet.adjust_position(tower.bullets)
 
                 if self._in_tunnel(bullet.x, bullet.y):
                     hit_tower_bullets.add((k, i))
