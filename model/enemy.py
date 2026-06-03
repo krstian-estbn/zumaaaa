@@ -10,7 +10,7 @@ class Enemy:
         self.r: int = r
         self.route: int = route
         self.route_idx: int = 0
-        self.timer: float = 0.0
+        self.timer: float = 1.0
         self.speed: float = speed / (2.0 * 30)
         self.smooth_speed: float = 8 * self.speed
         self.spawned: bool = True

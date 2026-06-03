@@ -14,7 +14,7 @@ class Shooter:
         self.color: Color = RNG.choice(COLORS)
         self.next_color: Color = RNG.choice(COLORS)
         self.bullets: List[Bullet] = []
-        self.timer: float = 0
+        self.timer: float = 1.0
         self.rate: float = 0.9 / 30
         self.speed: float = pyxel.height / (5.0 * 30)
 
@@ -25,7 +25,7 @@ class Shooter:
                 self.bullets.remove(bullet)
 
     def shoot_bullet(self, angle: float) -> None:
-        if self.timer >= 1 or not self.bullets:
+        if self.timer >= 1:
             self.timer = 0
             self.bullets.append(
                 Bullet(self.color, pyxel.width // 2 - 4, pyxel.height // 2 - 4, 4, angle, self.speed))

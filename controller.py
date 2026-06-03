@@ -293,6 +293,23 @@ class Controller:
                 elif self._is_clicked_button(resume_x, resume_y, resume_width, resume_height):
                     self._model.state = self.previous_state
 
+            elif pyxel.btnp(pyxel.KEY_R):
+                mode = self._model.mode
+                self._model.restart_game()
+                self._model.state = GameState.GAME
+                self._model.mode = mode
+
+            elif pyxel.btnp(pyxel.KEY_Q):
+                self._model.restart_game()
+
+            elif pyxel.btnp(pyxel.KEY_S):
+                self.previous_state = GameState.GAME
+                self._model.state = GameState.SETTINGS
+
+            elif pyxel.btnp(pyxel.KEY_SPACE):
+                self._model.state = self.previous_state
+
+
         elif self._model.state == GameState.SETTINGS:
             if pyxel.btnp(pyxel.MOUSE_BUTTON_LEFT):
                 start_y = pyxel.height // 2 - 90 - 3

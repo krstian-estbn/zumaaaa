@@ -14,7 +14,7 @@ class Tower:
         self.bullets: List[TowerBullet] = []
         self.show_info: bool = False
         self.level: int = 1
-        self.timer: float = 1
+        self.timer: float = 1.0
         self.rate: float = rate * (0.5 / 30)
         self.speed: float = speed * pyxel.height / (5.0 * 30)
         self.range: int = 48
