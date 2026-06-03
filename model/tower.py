@@ -33,6 +33,7 @@ class Tower:
 
     def upgrade(self) -> None:
         self.level += 1
+        self.range += 32
         self.rate += 0.2 / 30
 
 

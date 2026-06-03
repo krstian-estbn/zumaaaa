@@ -201,6 +201,10 @@ class View:
         create_text("PLAY AGAIN".center(20), center_x, y + 46, pyxel.COLOR_LIME, pyxel.COLOR_GREEN)
         create_text("EXIT".center(20), center_x, y + 62, pyxel.COLOR_PINK, pyxel.COLOR_RED)
 
+    def draw_tower_range(self, x, y, t_range):
+        d = (t_range - 16) // 2
+        pyxel.rectb(x - d, y - d, t_range, t_range, pyxel.COLOR_GRAY)
+
     def draw_tower_placement(self, mx, my, blocked_cells):
         tx = (mx // 16) * 16
         ty = (my // 16) * 16
@@ -214,7 +218,7 @@ class View:
                 blocked = True
                 break
 
-        pyxel.rectb(tx - 16, ty - 16, 48, 48, pyxel.COLOR_GRAY)
+        self.draw_tower_range(tx, ty, 48)
         
         if blocked:
             pyxel.blt(tx, ty, 0, 16, 80, 16, 16, 0)
@@ -222,6 +226,7 @@ class View:
             pyxel.blt(tx, ty, 0, 0, 80, 16, 16, 0)
 
     def draw_tower_info(self, tower):
+        self.draw_tower_range(tower.x, tower.y, tower.range)
         pyxel.rect(0, pyxel.height - 50, pyxel.width, 50, pyxel.COLOR_NAVY)
         pyxel.rectb(0, pyxel.height - 50, pyxel.width, 50, pyxel.COLOR_DARK_BLUE)
         pyxel.text(10, pyxel.height - 40, f"EDIT TOWER: Level {tower.level}", pyxel.COLOR_WHITE)
