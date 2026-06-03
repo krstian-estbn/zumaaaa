@@ -401,9 +401,6 @@ class Controller:
                     if self._model.mode in (Mode.CAMPAIGN_HARD, Mode.CAMPAIGN_NORMAL):
                         self._view.draw_round(self._model.rounds)
             else:
-                self._view.draw_next_color(self._model.shooter.next_color)
-                self._view.draw_exp(self._model.exp)
-                self._view.draw_lives(self._model.lives)
                 self._view.draw_routes(self._model.routes)
                 self._view.draw_tower_bullets(self._model.towers)
                 self._view.draw_enemies(self._model.enemies)
@@ -411,6 +408,9 @@ class Controller:
                 self._view.draw_towers(self._model.towers)
                 self._view.draw_bullets(self._model.shooter.bullets)
                 self._view.draw_shooter(self._model.shooter)
+                self._view.draw_next_color(self._model.shooter.next_color)
+                self._view.draw_exp(self._model.exp)
+                self._view.draw_lives(self._model.lives)
 
                 if self.place_tower:
                     self._view.draw_exit_placement()

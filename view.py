@@ -214,6 +214,8 @@ class View:
                 blocked = True
                 break
 
+        pyxel.rectb(tx - 16, ty - 16, 48, 48, pyxel.COLOR_GRAY)
+        
         if blocked:
             pyxel.blt(tx, ty, 0, 16, 80, 16, 16, 0)
         else:

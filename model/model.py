@@ -237,6 +237,15 @@ class Model:
                 return True
             
         return False
+
+    def _enemy_in_range(self, enemy: Enemy, tower: Tower) -> bool:
+        d = (tower.range - 16) // 2
+        tx = tower.x - d
+        ty = tower.y - d
+        cx = enemy.x + enemy.r
+        cy = enemy.y + enemy.r
+
+        return in_rect(cx, cy, tx, ty, tower.range)
     
     # 1 = normal, 2 = regenerator, 3 = chameleon; 1/2 chance for normal, 1/4 chance for special
     def spawn_enemies(self) -> None:
@@ -294,7 +303,10 @@ class Model:
         self.spawn_enemies()
 
         for tower in self.towers:
-            tower.shoot_bullets()
+            tower.update()
+            for enemy in self.enemies:
+                if self._enemy_in_range(enemy, tower):
+                    tower.shoot_bullets()
 
         # enemies
         for enemy in self.enemies[:]:

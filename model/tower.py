@@ -16,9 +16,12 @@ class Tower:
         self.timer: float = 0
         self.rate: float = rate * (0.5 / 30)
         self.speed: float = speed * pyxel.height / (5.0 * 30)
+        self.range: int = 48
+
+    def update(self) -> None:
+        self.timer += self.rate
 
     def shoot_bullets(self) -> None:
-        self.timer += self.rate
         if self.timer >= 1 or not self.bullets:
             self.timer = 0
             self.bullets.append(
